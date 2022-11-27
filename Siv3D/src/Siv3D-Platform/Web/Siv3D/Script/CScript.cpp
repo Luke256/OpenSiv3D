@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -96,16 +96,21 @@ namespace s3d
 		return {};
 	}
 
+	__attribute__((weak)) const Array<FilePath>& CScript::getIncludedFiles(const Script::IDType handleID)
+	{
+		return {};
+	}
+
 	__attribute__((weak)) const Array<String>& CScript::getMessages(const Script::IDType handleID)
 	{
 		return m_scripts[handleID]->getMessages();
 	}
 
-	__attribute__((weak)) void CScript::setSystemUpdateCallback(const Script::IDType handleID, const std::function<bool(void)>& callback)
+	__attribute__((weak)) void CScript::setSystemUpdateCallback(const Script::IDType handleID, const std::function<bool()>& callback)
 	{
 	}
 
-	__attribute__((weak)) const std::function<bool(void)>& CScript::getSystemUpdateCallback(const uint64 scriptID)
+	__attribute__((weak)) const std::function<bool()>& CScript::getSystemUpdateCallback(const uint64 scriptID)
 	{
 		return m_scripts[Script::IDType(static_cast<Script::IDType>(scriptID))]->getSystemUpdateCallback();
 	}

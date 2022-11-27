@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -18,10 +18,10 @@ namespace s3d
 
 	void RegisterTextInputMode(asIScriptEngine* engine)
 	{
-		int32 r = 0;
-		constexpr char TypeName[] = "TextInputMode";
+		[[maybe_unused]] int32 r = 0;
 
 		{
+			constexpr char TypeName[] = "TextInputMode";
 			r = engine->RegisterEnumValue(TypeName, "DenyControl", static_cast<uint32>(TextInputMode::DenyControl)); assert(r >= 0);
 			r = engine->RegisterEnumValue(TypeName, "AllowEnter", static_cast<uint32>(TextInputMode::AllowEnter)); assert(r >= 0);
 			r = engine->RegisterEnumValue(TypeName, "AllowTab", static_cast<uint32>(TextInputMode::AllowTab)); assert(r >= 0);

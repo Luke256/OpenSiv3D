@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -176,7 +176,7 @@ TEST_CASE("HashTable")
 
 	SECTION("Lookup")
 	{
-		HashTable<String, int32, phmap::container_internal::hash_default_hash<String>, phmap::container_internal::hash_default_eq<String>> table;
+		HashTable<String, int32, phmap::priv::hash_default_hash<String>, phmap::priv::hash_default_eq<String>> table;
 		for (auto c : Range(U'A', U'Z'))
 		{
 			table.emplace(String(8, c), c);

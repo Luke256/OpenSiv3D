@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -44,13 +44,15 @@ namespace s3d
 
 	void RegisterTextEditState(asIScriptEngine* engine)
 	{
-		int32 r = 0;
-
 		constexpr char TypeName[] = "TextEditState";
 
+		[[maybe_unused]] int32 r = 0;
 		r = engine->RegisterObjectProperty(TypeName, "String text", asOFFSET(BindType, text)); assert(r >= 0);
 		r = engine->RegisterObjectProperty(TypeName, "size_t cursorPos", asOFFSET(BindType, cursorPos)); assert(r >= 0);
 		r = engine->RegisterObjectProperty(TypeName, "bool active", asOFFSET(BindType, active)); assert(r >= 0);
+		r = engine->RegisterObjectProperty(TypeName, "bool textChanged", asOFFSET(BindType, textChanged)); assert(r >= 0);
+		r = engine->RegisterObjectProperty(TypeName, "bool tabKey", asOFFSET(BindType, tabKey)); assert(r >= 0);
+		r = engine->RegisterObjectProperty(TypeName, "bool enterKey", asOFFSET(BindType, enterKey)); assert(r >= 0);
 		r = engine->RegisterObjectProperty(TypeName, "Stopwatch leftPressStopwatch", asOFFSET(BindType, leftPressStopwatch)); assert(r >= 0);
 		r = engine->RegisterObjectProperty(TypeName, "Stopwatch rightPressStopwatch", asOFFSET(BindType, rightPressStopwatch)); assert(r >= 0);
 		r = engine->RegisterObjectProperty(TypeName, "Stopwatch cursorStopwatch", asOFFSET(BindType, cursorStopwatch)); assert(r >= 0);

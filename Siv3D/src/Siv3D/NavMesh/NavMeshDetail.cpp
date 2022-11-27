@@ -2,14 +2,13 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
 //-----------------------------------------------
 
-# include <Siv3D/Functor.hpp>
 # include "NavMeshDetail.hpp"
 
 namespace s3d
@@ -118,6 +117,11 @@ namespace s3d
 		release();
 	}
 
+	bool NavMesh::NavMeshDetail::isValid() const noexcept
+	{
+		return m_built;
+	}
+
 	bool NavMesh::NavMeshDetail::build(const Array<Float2>& vertices, const Array<TriangleIndex>& indices, const Array<uint8>& areaIDs, const NavMeshConfig& config)
 	{
 		release();
@@ -134,7 +138,7 @@ namespace s3d
 			return false;
 		}
 
-		if (not areaIDs.all(LessThanEqual(RC_WALKABLE_AREA)))
+		if (not areaIDs.all([](uint8 id) { return (id <= RC_WALKABLE_AREA); }))
 		{
 			return false;
 		}
@@ -168,7 +172,7 @@ namespace s3d
 			return false;
 		}
 
-		if (not areaIDs.all(LessThanEqual(RC_WALKABLE_AREA)))
+		if (not areaIDs.all([](uint8 id) { return (id <= RC_WALKABLE_AREA); }))
 		{
 			return false;
 		}
@@ -185,11 +189,13 @@ namespace s3d
 		return true;
 	}
 
-	Array<Vec2> NavMesh::NavMeshDetail::query(const Float2& _start, const Float2& _end, const Array<std::pair<int32, double>>& areaCosts) const
+	void NavMesh::NavMeshDetail::query(const Float2& _start, const Float2& _end, const Array<std::pair<int32, double>>& areaCosts, Array<Vec2>& dst) const
 	{
+		dst.clear();
+
 		if (not m_built)
 		{
-			return{};
+			return;
 		}
 
 		dtQueryFilter filter;
@@ -210,12 +216,12 @@ namespace s3d
 		{
 			if (dtStatusFailed(m_data.navmeshQuery.findNearestPoly(&start.x, &extent.x, &filter, &startpoly, 0)))
 			{
-				return{};
+				return;
 			}
 
 			if (startpoly == 0)
 			{
-				return{};
+				return;
 			}
 		}
 
@@ -223,57 +229,65 @@ namespace s3d
 		{
 			if (dtStatusFailed(m_data.navmeshQuery.findNearestPoly(&end.x, &extent.x, &filter, &endpoly, 0)))
 			{
-				return{};
+				return;
 			}
 
 			if (endpoly == 0)
 			{
-				return{};
+				return;
 			}
 		}
 
-		constexpr int32 buffersize = 8192;
-		Array<dtPolyRef> polys(buffersize);
 		int32 npolys = 0;
 		{
-			if (dtStatusFailed(m_data.navmeshQuery.findPath(startpoly, endpoly, &start.x, &end.x, &filter, polys.data(), &npolys, buffersize)))
+			if (dtStatusFailed(m_data.navmeshQuery.findPath(startpoly, endpoly, &start.x, &end.x, &filter, m_polygonBuffer.data(), &npolys, PolygonBufferSize)))
 			{
-				return{};
+				return;
 			}
 
 			if (npolys <= 0)
 			{
-				return{};
+				return;
 			}
 		}
 
 		float end2[3] = { end.x, end.y, end.z };
 
-		if (polys[static_cast<size_t>(npolys) - 1] != endpoly)
+		if (m_polygonBuffer[static_cast<size_t>(npolys) - 1] != endpoly)
 		{
 			bool posOverPoly;
-			m_data.navmeshQuery.closestPointOnPoly(polys[static_cast<size_t>(npolys) - 1], &end.x, end2, &posOverPoly);
+			m_data.navmeshQuery.closestPointOnPoly(m_polygonBuffer[static_cast<size_t>(npolys) - 1], &end.x, end2, &posOverPoly);
 		}
 
-		constexpr int32 maxvertices = 8192;
-
-		Array<Float3> buffer(maxvertices);
 		{
 			int32 nvertices = 0;
+			m_data.navmeshQuery.findStraightPath(&start.x, end2, m_polygonBuffer.data(), npolys, &m_buffer[0].x, 0, 0, &nvertices, MaxVertices);
 
-			m_data.navmeshQuery.findStraightPath(&start.x, end2, polys.data(), npolys, &buffer[0].x, 0, 0, &nvertices, maxvertices);
+			if (nvertices)
+			{
+				dst.resize(nvertices);
 
-			buffer.resize(nvertices);
+				const Float3* pSrc = m_buffer.data();
+				const Float3* pSrcEnd = (pSrc + nvertices);
+				Vec2* pDst = dst.data();
+
+				while (pSrc != pSrcEnd)
+				{
+					pDst->set(pSrc->x, pSrc->z);
+					++pDst;
+					++pSrc;
+				}
+			}
 		}
-
-		return buffer.map([](const Float3& v) { return Vec2{ v.x, v.z }; });
 	}
 
-	Array<Vec3> NavMesh::NavMeshDetail::query(const Float3& start, const Float3& end, const Array<std::pair<int32, double>>& areaCosts) const
+	void NavMesh::NavMeshDetail::query(const Float3& start, const Float3& end, const Array<std::pair<int32, double>>& areaCosts, Array<Vec3>& dst) const
 	{
+		dst.clear();
+
 		if (not m_built)
 		{
-			return{};
+			return;
 		}
 
 		dtQueryFilter filter;
@@ -293,12 +307,12 @@ namespace s3d
 		{
 			if (dtStatusFailed(m_data.navmeshQuery.findNearestPoly(&start.x, &extent.x, &filter, &startpoly, 0)))
 			{
-				return{};
+				return;
 			}
 
 			if (startpoly == 0)
 			{
-				return{};
+				return;
 			}
 		}
 
@@ -306,50 +320,54 @@ namespace s3d
 		{
 			if (dtStatusFailed(m_data.navmeshQuery.findNearestPoly(&end.x, &extent.x, &filter, &endpoly, 0)))
 			{
-				return{};
+				return;
 			}
 
 			if (endpoly == 0)
 			{
-				return{};
+				return;
 			}
 		}
 
-		constexpr int32 buffersize = 8192;
-		Array<dtPolyRef> polys(buffersize);
 		int32 npolys = 0;
 		{
-			if (dtStatusFailed(m_data.navmeshQuery.findPath(startpoly, endpoly, &start.x, &end.x, &filter, polys.data(), &npolys, buffersize)))
+			if (dtStatusFailed(m_data.navmeshQuery.findPath(startpoly, endpoly, &start.x, &end.x, &filter, m_polygonBuffer.data(), &npolys, PolygonBufferSize)))
 			{
-				return{};
+				return;
 			}
 
 			if (npolys <= 0)
 			{
-				return{};
+				return;
 			}
 		}
 
 		float end2[3] = { end.x, end.y, end.z };
 
-		if (polys[static_cast<size_t>(npolys) - 1] != endpoly)
+		if (m_polygonBuffer[static_cast<size_t>(npolys) - 1] != endpoly)
 		{
 			bool posOverPoly;
-			m_data.navmeshQuery.closestPointOnPoly(polys[static_cast<size_t>(npolys) - 1], &end.x, end2, &posOverPoly);
+			m_data.navmeshQuery.closestPointOnPoly(m_polygonBuffer[static_cast<size_t>(npolys) - 1], &end.x, end2, &posOverPoly);
 		}
 
-		constexpr int32 maxvertices = 8192;
-
-		Array<Float3> buffer(maxvertices);
 		{
 			int32 nvertices = 0;
+			m_data.navmeshQuery.findStraightPath(&start.x, end2, m_polygonBuffer.data(), npolys, &m_buffer[0].x, 0, 0, &nvertices, MaxVertices);
 
-			m_data.navmeshQuery.findStraightPath(&start.x, end2, polys.data(), npolys, &buffer[0].x, 0, 0, &nvertices, maxvertices);
+			if (nvertices)
+			{
+				dst.resize(nvertices);
 
-			buffer.resize(nvertices);
+				const Float3* pSrc = m_buffer.data();
+				const Float3* pSrcEnd = (pSrc + nvertices);
+				Vec3* pDst = dst.data();
+
+				while (pSrc != pSrcEnd)
+				{
+					*pDst++ = *pSrc++;
+				}
+			}
 		}
-
-		return buffer.map([](const Float3& v) { return Vec3{ v }; });
 	}
 
 	bool NavMesh::NavMeshDetail::build(const NavMeshConfig& config, const NavMeshAABB& aabb,
@@ -454,6 +472,10 @@ namespace s3d
 		{
 			return false;
 		}
+
+		m_buffer.resize(MaxVertices);
+
+		m_polygonBuffer.resize(PolygonBufferSize);
 
 		m_built = true;
 

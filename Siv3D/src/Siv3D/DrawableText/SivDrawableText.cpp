@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -11,6 +11,9 @@
 
 # include <Siv3D/DrawableText.hpp>
 # include <Siv3D/Math.hpp>
+# include <Siv3D/Char.hpp>
+# include <Siv3D/2DShapes.hpp>
+# include <Siv3D/BitmapGlyph.hpp>
 # include <Siv3D/Font/IFont.hpp>
 # include <Siv3D/Common/Siv3DEngine.hpp>
 

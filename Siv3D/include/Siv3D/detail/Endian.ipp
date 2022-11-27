@@ -2,18 +2,16 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
 //-----------------------------------------------
 
 # pragma once
-# include "../Endian.hpp"
-
 # if SIV3D_PLATFORM(WINDOWS)
-#	include <cstdlib>
+#	include <bit>
 # elif SIV3D_PLATFORM(MACOS)
 #	include <libkern/OSByteOrder.h>
 # endif
@@ -24,17 +22,17 @@ namespace s3d
 
 	inline uint16 SwapEndian(const uint16 value) noexcept
 	{
-		return ::_byteswap_ushort(value);
+		return std::byteswap(value);
 	}
 
 	inline uint32 SwapEndian(const uint32 value) noexcept
 	{
-		return ::_byteswap_ulong(value);
+		return std::byteswap(value);
 	}
 
 	inline uint64 SwapEndian(const uint64 value) noexcept
 	{
-		return ::_byteswap_uint64(value);
+		return std::byteswap(value);
 	}
 
 # elif SIV3D_PLATFORM(MACOS)

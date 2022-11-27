@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -57,6 +57,12 @@ namespace s3d
 		MillisecClock,
 		MicrosecClock,
 		RDTSCClock,
+
+		TextReader,
+		TextWriterBuffer,
+		TextWriter,
+		INI,
+
 		Color,
 		ColorF,
 		HSV,
@@ -106,6 +112,7 @@ namespace s3d
 		DrawableText,
 		Transformer2D,
 		ScopedViewport2D,
+		Camera2DParameters,
 		Camera2D,
 		Emoji,
 		Icon,
@@ -120,7 +127,11 @@ namespace s3d
 		SayBuffer,
 		Say_impl,
 		TextEditState,
+		LicenseInfo,
 
+		XInputVibration,
+		XInput_helper,
+		XInput_impl,
 	};
 
 	using AngelScript::asIScriptEngine;
@@ -134,6 +145,7 @@ namespace s3d
 	void RegisterOptional(asIScriptEngine* engine);
 	void RegisterNumber(asIScriptEngine* engine);
 	void RegisterFloatingPoint(asIScriptEngine* engine);
+	void RegisterParse(asIScriptEngine* engine);
 
 	void RegisterDuration(asIScriptEngine* engine);
 	void RegisterDate(asIScriptEngine* engine);
@@ -146,6 +158,12 @@ namespace s3d
 	void RegisterMillisecClock(asIScriptEngine* engine);
 	void RegisterMicrosecClock(asIScriptEngine* engine);
 	void RegisterRDTSCClock(asIScriptEngine* engine);
+
+	void RegisterTextEncoding(asIScriptEngine* engine);
+	void RegisterOpenMode(asIScriptEngine* engine);
+	void RegisterTextReader(asIScriptEngine* engine);
+	void RegisterTextWriter(asIScriptEngine* engine);
+	void RegisterINI(asIScriptEngine* engine);
 
 	void RegisterSpecialFolder(asIScriptEngine* engine);
 	void RegisterCopyOption(asIScriptEngine* engine);
@@ -213,12 +231,14 @@ namespace s3d
 	void RegisterInput(asIScriptEngine* engine);
 	void RegisterKeyboard(asIScriptEngine* engine);
 	void RegisterMouse(asIScriptEngine* engine);
+	void RegisterXInput(asIScriptEngine* engine);
 
 	void RegisterImageFormat(asIScriptEngine* engine);
 	void RegisterImage(asIScriptEngine* engine);
 
 	void RegisterTransformer2D(asIScriptEngine* engine);
 	void RegisterScopedViewport2D(asIScriptEngine* engine);
+	void RegisterCamera2DParameters(asIScriptEngine* engine);
 	void RegisterCameraControl(asIScriptEngine* engine);
 	void RegisterCamera2D(asIScriptEngine* engine);
 
@@ -251,6 +271,8 @@ namespace s3d
 	void RegisterTextInputMode(asIScriptEngine* engine);
 	void RegisterTextInput(asIScriptEngine* engine);
 	void RegisterTextEditState(asIScriptEngine* engine);
+	void RegisterLicenseInfo(asIScriptEngine* engine);
+	void RegisterLicenseManager(asIScriptEngine* engine);
 	void RegisterSimpleGUI(asIScriptEngine* engine);
 	void RegisterLanguageCode(asIScriptEngine* engine);
 	void RegisterTextToSpeech(asIScriptEngine* engine);

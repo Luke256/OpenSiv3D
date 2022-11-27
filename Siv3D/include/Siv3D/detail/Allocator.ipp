@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -25,8 +25,8 @@ namespace s3d
 		AlignedFree(p);
 	}
 
-	template <class T1, class T2>
-	inline constexpr bool operator ==(const Allocator<T1>&, const Allocator<T2>&) noexcept
+	template <class T1, size_t A1, class T2, size_t A2>
+	inline constexpr bool operator ==(const Allocator<T1, A1>&, const Allocator<T2, A2>&) noexcept
 	{
 		return true;
 	}

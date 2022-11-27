@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -18,9 +18,9 @@ namespace s3d
 
 	void RegisterMixBus(asIScriptEngine* engine)
 	{
-		int32 r = 0;
 		constexpr char TypeName[] = "MixBus";
 
+		[[maybe_unused]] int32 r = 0;
 		{
 			r = engine->RegisterEnumValue(TypeName, "Index0", static_cast<int32>(MixBus::Index0)); assert(r >= 0);
 			r = engine->RegisterEnumValue(TypeName, "Index1", static_cast<int32>(MixBus::Index1)); assert(r >= 0);

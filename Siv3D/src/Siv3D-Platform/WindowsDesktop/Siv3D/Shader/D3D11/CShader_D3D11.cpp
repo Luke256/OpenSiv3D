@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -415,7 +415,7 @@ namespace s3d
 	Blob CShader_D3D11::compileHLSLFromFile(const FilePathView path, const ShaderStage stage, const StringView entryPoint, const Platform::Windows::HLSLCompileOption flags) const
 	{
 		LOG_TRACE(U"CShader_D3D11::compileHLSLFromFile(path = {}, stage = {}, entryPoint = {}, flags = {:#X})"_fmt(
-			path, Unicode::Widen(detail::StageToTarget(stage)), entryPoint, flags));
+			path, Unicode::Widen(detail::StageToTarget(stage)), entryPoint, FromEnum(flags)));
 
 		TextReader reader{ path };
 
@@ -432,7 +432,7 @@ namespace s3d
 	Blob CShader_D3D11::compileHLSLFromSource(const StringView source, const ShaderStage stage, const StringView entryPoint, const Platform::Windows::HLSLCompileOption flags) const
 	{
 		LOG_TRACE(U"CShader_D3D11::compileHLSLFromSource(stage = {}, entryPoint = {}, flags = {:#X})"_fmt(
-			Unicode::Widen(detail::StageToTarget(stage)), entryPoint, flags));
+			Unicode::Widen(detail::StageToTarget(stage)), entryPoint, FromEnum(flags)));
 
 		if (not source)
 		{

@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -14,6 +14,7 @@
 # include <Siv3D/Unicode.hpp>
 # include <Siv3D/MeshData.hpp>
 # include <Siv3D/Geometry3D.hpp>
+# include <Siv3D/SIMDCollision.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include <ThirdParty/tinyobjloader/tiny_obj_loader.h>
 

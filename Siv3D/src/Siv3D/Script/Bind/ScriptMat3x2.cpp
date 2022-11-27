@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -37,7 +37,7 @@ namespace s3d
 	{
 		constexpr char TypeName[] = "Mat3x2";
 
-		int32 r = 0;
+		[[maybe_unused]] int32 r = 0;
 		r = engine->RegisterObjectProperty(TypeName, "float _11", asOFFSET(BindType, _11)); assert(r >= 0);
 		r = engine->RegisterObjectProperty(TypeName, "float _12", asOFFSET(BindType, _12)); assert(r >= 0);
 		r = engine->RegisterObjectProperty(TypeName, "float _21", asOFFSET(BindType, _21)); assert(r >= 0);

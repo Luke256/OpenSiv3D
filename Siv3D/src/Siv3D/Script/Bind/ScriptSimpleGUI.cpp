@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -57,14 +57,14 @@ namespace s3d
 		return SimpleGUI::Slider(value, min, max, pos, sliderWidth, enabled);
 	}
 
-	static bool Slider3(const String& label, double& value, const Vec2& pos, double sliderWidth, bool enabled)
+	static bool Slider3(const String& label, double& value, const Vec2& pos, double labelWidth, double sliderWidth, bool enabled)
 	{
-		return SimpleGUI::Slider(label, value, pos, sliderWidth, enabled);
+		return SimpleGUI::Slider(label, value, pos, labelWidth, sliderWidth, enabled);
 	}
 
-	static bool Slider4(const String& label, double& value, double min, double max, const Vec2& pos, double sliderWidth, bool enabled)
+	static bool Slider4(const String& label, double& value, double min, double max, const Vec2& pos, double labelWidth, double sliderWidth, bool enabled)
 	{
-		return SimpleGUI::Slider(label, value, min, max, pos, sliderWidth, enabled);
+		return SimpleGUI::Slider(label, value, min, max, pos, labelWidth, sliderWidth, enabled);
 	}
 
 
@@ -109,12 +109,12 @@ namespace s3d
 		return SimpleGUI::CheckBox(checked, text, pos, none, enabled);
 	}
 
-	static bool TextBox1(TextEditState& text, const Vec2& pos, double width, size_t maxChars, bool enabled) // FIXME ->ScriptSimpleGUI.cpp
+	static bool TextBox1(TextEditState& text, const Vec2& pos, double width, size_t maxChars, bool enabled)
 	{
 		return SimpleGUI::TextBox(text, pos, width, maxChars, enabled);
 	}
 
-	static bool TextBox2(TextEditState& text, const Vec2& pos, double width, const uint8&, bool enabled) // FIXME ->ScriptSimpleGUI.cpp
+	static bool TextBox2(TextEditState& text, const Vec2& pos, double width, const uint8&, bool enabled)
 	{
 		return SimpleGUI::TextBox(text, pos, width, unspecified, enabled);
 	}
@@ -132,7 +132,7 @@ namespace s3d
 
 	void RegisterSimpleGUI(asIScriptEngine* engine)
 	{
-		int32 r = 0;
+		[[maybe_unused]] int32 r = 0;
 
 		r = engine->SetDefaultNamespace("SimpleGUI"); assert(r >= 0);
 		{
@@ -147,8 +147,8 @@ namespace s3d
 
 			r = engine->RegisterGlobalFunction("bool Slider(double& inout value, const Vec2& in pos, double sliderWidth = 120.0, bool enabled = true)", asFUNCTION(Slider1), asCALL_CDECL); assert(r >= 0);
 			r = engine->RegisterGlobalFunction("bool Slider(double& inout value, double min, double max, const Vec2& in pos, double sliderWidth = 120.0, bool enabled = true)", asFUNCTION(Slider2), asCALL_CDECL); assert(r >= 0);
-			r = engine->RegisterGlobalFunction("bool Slider(const String& in, double& inout value, const Vec2& in pos, double sliderWidth = 120.0, bool enabled = true)", asFUNCTION(Slider3), asCALL_CDECL); assert(r >= 0);
-			r = engine->RegisterGlobalFunction("bool Slider(const String& in, double& inout value, double min, double max, const Vec2& in pos, double sliderWidth = 120.0, bool enabled = true)", asFUNCTION(Slider4), asCALL_CDECL); assert(r >= 0);
+			r = engine->RegisterGlobalFunction("bool Slider(const String& in, double& inout value, const Vec2& in pos, double labelWidth = 80.0, double sliderWidth = 120.0, bool enabled = true)", asFUNCTION(Slider3), asCALL_CDECL); assert(r >= 0);
+			r = engine->RegisterGlobalFunction("bool Slider(const String& in, double& inout value, double min, double max, const Vec2& in pos, double labelWidth = 80.0, double sliderWidth = 120.0, bool enabled = true)", asFUNCTION(Slider4), asCALL_CDECL); assert(r >= 0);
 
 			r = engine->RegisterGlobalFunction("bool VerticalSlider(double& inout value, const Vec2& in pos, double sliderHeight = 120.0, bool enabled = true)", asFUNCTION(VerticalSlider1), asCALL_CDECL); assert(r >= 0);
 			r = engine->RegisterGlobalFunction("bool VerticalSlider(double& inout value, double min, double max, const Vec2& in pos, double sliderHeight = 120.0, bool enabled = true)", asFUNCTION(VerticalSlider2), asCALL_CDECL); assert(r >= 0);

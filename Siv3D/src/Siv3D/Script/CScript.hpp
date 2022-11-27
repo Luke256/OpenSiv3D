@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -49,11 +49,13 @@ namespace s3d
 
 		Array<String> retrieveMessages_internal() override;
 
+		const Array<FilePath>& getIncludedFiles(Script::IDType handleID) override;
+
 		const Array<String>& getMessages(Script::IDType handleID) override;
 
-		void setSystemUpdateCallback(Script::IDType handleID, const std::function<bool(void)>& callback) override;
+		void setSystemUpdateCallback(Script::IDType handleID, const std::function<bool()>& callback) override;
 		
-		const std::function<bool(void)>& getSystemUpdateCallback(uint64 scriptID) override;
+		const std::function<bool()>& getSystemUpdateCallback(uint64 scriptID) override;
 
 		AngelScript::asIScriptEngine* getEngine() override;
 

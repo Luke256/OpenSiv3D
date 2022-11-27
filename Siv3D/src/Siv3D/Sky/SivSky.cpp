@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -25,7 +25,7 @@ namespace s3d
 		, m_pixelShader{ HLSL{ Resource(U"engine/shader/d3d11/sky.ps") }
 			| GLSL{ Resource(U"engine/shader/glsl/sky.frag"), {{U"PSPerFrame",0}, {U"PSPerView",1}, {U"PSSky",4}} }
 			| ESSL{ Resource(U"engine/shader/essl/sky.frag"), {{U"PSPerFrame",0}, {U"PSPerView",1}, {U"PSSky",4}} }
-			| WGSL{ Resource(U"engine/shader/wgsl/sky.frag.wgsl"), {{U"PSPerFrame",0}, {U"PSPerView",1}, {U"PSPerMaterial",3}, {U"PSSky",4}} } } {}
+			| WGSL{ Resource(U"engine/shader/wgsl/sky.frag.wgsl"), {{U"PSPerFrame",0}, {U"PSPerView",1}, {U"PSPerMaterial",2}, {U"PSSky",3}} } } {}
 
 	void Sky::draw(const double exposure) const
 	{

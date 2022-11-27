@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -256,6 +256,24 @@ namespace s3d
 		}
 	}
 
+	void CRenderer2D_WebGPU::addRectFrameTB(const FloatRect& rect, const float thickness, const Float4& topColor, const Float4& bottomColor)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRectFrameTB(m_bufferCreator, rect, thickness, topColor, bottomColor))
+		{
+			if (not m_currentCustomVS)
+			{
+				m_commandManager.pushStandardVS(m_standardVS->spriteID);
+			}
+
+			if (not m_currentCustomPS)
+			{
+				m_commandManager.pushStandardPS(m_standardPS->shapeID);
+			}
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
 	void CRenderer2D_WebGPU::addCircle(const Float2& center, const float r, const Float4& innerColor, const Float4& outerColor)
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildCircle(m_bufferCreator, center, r, innerColor, outerColor, getMaxScaling()))
@@ -403,6 +421,60 @@ namespace s3d
 	void CRenderer2D_WebGPU::addRoundRect(const FloatRect& rect, const float w, const float h, const float r, const Float4& color)
 	{
 		if (const auto indexCount = Vertex2DBuilder::BuildRoundRect(m_bufferCreator, m_buffer, rect, w, h, r, color, getMaxScaling()))
+		{
+			if (not m_currentCustomVS)
+			{
+				m_commandManager.pushStandardVS(m_standardVS->spriteID);
+			}
+
+			if (not m_currentCustomPS)
+			{
+				m_commandManager.pushStandardPS(m_standardPS->shapeID);
+			}
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+	
+	void CRenderer2D_WebGPU::addRoundRect(const FloatRect& rect, const float w, const float h, const float r, const Float4& topColor, const Float4& bottomColor)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRect(m_bufferCreator, m_buffer, rect, w, h, r, topColor, bottomColor, getMaxScaling()))
+		{
+			if (not m_currentCustomVS)
+			{
+				m_commandManager.pushStandardVS(m_standardVS->spriteID);
+			}
+
+			if (not m_currentCustomPS)
+			{
+				m_commandManager.pushStandardPS(m_standardPS->shapeID);
+			}
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	void CRenderer2D_WebGPU::addRoundRectFrame(const RoundRect& outer, const RoundRect& inner, const Float4& color)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectFrame(m_bufferCreator, m_buffer, outer, inner, color, getMaxScaling()))
+		{
+			if (not m_currentCustomVS)
+			{
+				m_commandManager.pushStandardVS(m_standardVS->spriteID);
+			}
+
+			if (not m_currentCustomPS)
+			{
+				m_commandManager.pushStandardPS(m_standardPS->shapeID);
+			}
+
+			m_commandManager.pushDraw(indexCount);
+		}
+	}
+
+	void CRenderer2D_WebGPU::addRoundRectFrame(const RoundRect& outer, const RoundRect& inner, const Float4& topColor, const Float4& bottomColor)
+	{
+		if (const auto indexCount = Vertex2DBuilder::BuildRoundRectFrame(m_bufferCreator, m_buffer, outer, inner, topColor, bottomColor, getMaxScaling()))
 		{
 			if (not m_currentCustomVS)
 			{
@@ -939,7 +1011,7 @@ namespace s3d
 		auto currentRenderTargetState = pRenderer->getBackBuffer().getRenderTargetState();
 
 		Size currentRenderTargetSize = SIV3D_ENGINE(Renderer)->getSceneBufferSize();
-		currentRenderingPass.SetViewport(0.0f, 0.0f, currentRenderTargetSize.x, currentRenderTargetSize.y, 0.0f, 1.0f);
+		Rect currentViewportRect{ 0, 0, currentRenderTargetSize.x, currentRenderTargetSize.y };
 
 		Mat3x2 transform = Mat3x2::Identity();
 		Mat3x2 screenMat = Mat3x2::Screen(currentRenderTargetSize);
@@ -1112,6 +1184,7 @@ namespace s3d
 					rect.w = Min(rect.w, currentRenderTargetSize.x);
 					rect.h = Min(rect.h, currentRenderTargetSize.y);
 
+					currentViewportRect = rect;
 					currentRenderingPass.SetViewport(rect.x, rect.y, rect.w, rect.h, 0.0f, 1.0f);
 
 					screenMat = Mat3x2::Screen(rect.w, rect.h);
@@ -1143,7 +1216,7 @@ namespace s3d
 				{
 					const auto& rt = m_commandManager.getRT(command.index);
 					
-					currentRenderingPass.EndPass();
+					currentRenderingPass.End();
 
 					if (rt) // [カスタム RenderTexture]
 					{
@@ -1162,6 +1235,12 @@ namespace s3d
 						LOG_COMMAND(U"SetRT[{}] (default scene)"_fmt(command.index));
 					}
 
+					Rect rect{ currentViewportRect };
+
+					rect.w = Min(rect.w, currentRenderTargetSize.x);
+					rect.h = Min(rect.h, currentRenderTargetSize.y);
+
+					currentRenderingPass.SetViewport(0.0f, 0.0f, currentRenderTargetSize.x, currentRenderTargetSize.y, 0.0f, 1.0f);
 					break;
 				}
 			case WebGPURenderer2DCommandType::SetVS:
@@ -1288,7 +1367,7 @@ namespace s3d
 			}
 		}
 
-		currentRenderingPass.EndPass();
+		currentRenderingPass.End();
 
 		++m_drawCount;
 	}

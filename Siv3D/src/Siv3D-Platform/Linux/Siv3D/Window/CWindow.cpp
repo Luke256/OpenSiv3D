@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -16,6 +16,7 @@
 # include <Siv3D/UserAction.hpp>
 # include <Siv3D/Scene.hpp>
 # include <Siv3D/Monitor.hpp>
+# include <Siv3D/MonitorInfo.hpp>
 # include <Siv3D/Renderer/IRenderer.hpp>
 # include <Siv3D/Profiler/IProfiler.hpp>
 # include <Siv3D/UserAction/IUserAction.hpp>
@@ -54,13 +55,29 @@ namespace s3d
 		{
 			throw EngineError(U"glfwInit() failed");
 		}
+
+		const bool useGLES = (g_engineOptions.renderer == EngineOption::Renderer::WebGL2);
 		
-		// OpenGL 4.1
-		::glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-		::glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-		::glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
-		::glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-		::glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, SIV3D_BUILD(DEBUG) ? GLFW_TRUE : GLFW_FALSE);
+		if (useGLES)
+		{
+			// OpenGL ES 3.0
+			::glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+			::glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+			::glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+			// GLES 3.0 does not support context profiles
+			//::glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+			//::glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+			::glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, SIV3D_BUILD(DEBUG) ? GLFW_TRUE : GLFW_FALSE);
+		}
+		else
+		{
+			// OpenGL 4.1
+			::glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+			::glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+			::glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GLFW_TRUE);
+			::glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+			::glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, SIV3D_BUILD(DEBUG) ? GLFW_TRUE : GLFW_FALSE);
+		}
 		
 		::glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
 	
@@ -287,6 +304,11 @@ namespace s3d
 	bool CWindow::isToggleFullscreenEnabled() const
 	{
 		return false;
+	}
+
+	void CWindow::setTaskbarProgressBar(double)
+	{
+		// do nothing
 	}
 
 	void CWindow::updateState()

@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -55,7 +55,7 @@ namespace s3d
 			TOMLValueDetail() = default;
 
 			explicit TOMLValueDetail(const std::shared_ptr<cpptoml::base>& _value)
-				: ptr(_value) {}
+				: ptr{ _value } {}
 		};
 	}
 
@@ -650,8 +650,15 @@ namespace s3d
 			close();
 		}
 
+		TextReader textReader{ path };
+
+		if (not textReader)
+		{
+			return false;
+		}
+
 		std::stringstream ss;
-		ss << TextReader(path).readAll().toUTF8();
+		ss << textReader.readAll().toUTF8();
 
 		try
 		{
@@ -672,8 +679,15 @@ namespace s3d
 			close();
 		}
 
+		TextReader textReader{ std::move(reader) };
+
+		if (not textReader)
+		{
+			return false;
+		}
+
 		std::stringstream ss;
-		ss << TextReader{ std::move(reader) }.readAll().toUTF8();
+		ss << textReader.readAll().toUTF8();
 
 		try
 		{

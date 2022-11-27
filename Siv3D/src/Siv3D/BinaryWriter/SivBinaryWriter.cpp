@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -15,9 +15,12 @@
 namespace s3d
 {
 	BinaryWriter::BinaryWriter()
-		: pImpl{ std::make_shared<BinaryWriterDetail>() }
-	{
+		: pImpl{ std::make_shared<BinaryWriterDetail>() } {}
 
+	BinaryWriter::BinaryWriter(const FilePathView path, const OpenMode openMode)
+		: BinaryWriter{}
+	{
+		open(path, openMode);
 	}
 
 	bool BinaryWriter::open(const FilePathView path, const OpenMode openMode)
@@ -31,6 +34,11 @@ namespace s3d
 	}
 
 	bool BinaryWriter::isOpen() const noexcept
+	{
+		return pImpl->isOpen();
+	}
+
+	BinaryWriter::operator bool() const noexcept
 	{
 		return pImpl->isOpen();
 	}

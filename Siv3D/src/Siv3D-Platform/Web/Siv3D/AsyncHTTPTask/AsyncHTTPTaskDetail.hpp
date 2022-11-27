@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -20,6 +20,7 @@
 # include <Siv3D/HTTPAsyncStatus.hpp>
 # include <Siv3D/HTTPProgress.hpp>
 # include <Siv3D/BinaryWriter.hpp>
+# include <Siv3D/AsyncHTTPTask.hpp>
 
 namespace s3d
 {
@@ -39,12 +40,14 @@ namespace s3d
 		bool isEmpty() const noexcept;
 
 		[[nodiscard]]
-		bool isReady();
+		bool isReady() const;
 
 		void cancel();
 
 		[[nodiscard]]
 		const HTTPResponse& getResponse();
+
+		void resolveResponse();
 
 		[[nodiscard]]
 		HTTPAsyncStatus getStatus();
@@ -67,6 +70,8 @@ namespace s3d
 
 		////
 		//
+		std::promise<HTTPResponse> m_promise;
+
 		std::mutex m_mutex;
 
 		HTTPProgress m_progress_internal;
@@ -78,5 +83,7 @@ namespace s3d
 		URL m_url;
 
 		HTTPResponse m_response;
+
+		friend AsyncTask<HTTPResponse> Platform::Web::SimpleHTTP::CreateAsyncTask(AsyncHTTPTask& httpTask);
 	};
 }

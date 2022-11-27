@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -72,6 +72,11 @@ namespace s3d
 		// do nothing
 	}
 
+	void CRenderer2D_Null::addRectFrameTB(const FloatRect&, const float, const Float4&, const Float4&)
+	{
+		// do nothing
+	}
+
 	void CRenderer2D_Null::addCircle(const Float2&, const float, const Float4&, const Float4&)
 	{
 		// do nothing
@@ -113,6 +118,21 @@ namespace s3d
 	}
 
 	void CRenderer2D_Null::addRoundRect(const FloatRect&, const float, const float, const float, const Float4&)
+	{
+		// do nothing
+	}
+
+	void CRenderer2D_Null::addRoundRect(const FloatRect&, float, float, float, const Float4&, const Float4&)
+	{
+		// do nothing
+	}
+
+	void CRenderer2D_Null::addRoundRectFrame(const RoundRect&, const RoundRect&, const Float4&)
+	{
+		// do nothing
+	}
+
+	void CRenderer2D_Null::addRoundRectFrame(const RoundRect&, const RoundRect&, const Float4&, const Float4&)
 	{
 		// do nothing
 	}
@@ -247,7 +267,7 @@ namespace s3d
 
 	Rect CRenderer2D_Null::getScissorRect() const
 	{
-		return Rect{ 0 };
+		return Rect::Empty();
 	}
 
 	void CRenderer2D_Null::setViewport(const Optional<Rect>&)

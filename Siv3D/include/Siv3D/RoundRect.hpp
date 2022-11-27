@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -218,10 +218,16 @@ namespace s3d
 		constexpr position_type center() const noexcept;
 
 		[[nodiscard]]
-		constexpr double area() const noexcept;
+		constexpr value_type area() const noexcept;
 
 		[[nodiscard]]
-		constexpr double perimeter() const noexcept;
+		constexpr value_type perimeter() const noexcept;
+
+		[[nodiscard]]
+		constexpr value_type horizontalAspectRatio() const noexcept;
+
+		[[nodiscard]]
+		Array<Vec2> outerVertices(uint32 quality = 24) const;
 
 		[[nodiscard]]
 		Polygon asPolygon(uint32 quality = 24) const;
@@ -289,9 +295,15 @@ namespace s3d
 
 		const RoundRect& draw(const ColorF& color = Palette::White) const;
 
+		const RoundRect& draw(Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
+
 		const RoundRect& drawFrame(double thickness = 1.0, const ColorF& color = Palette::White) const;
 
+		const RoundRect& drawFrame(double thickness, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
+
 		const RoundRect& drawFrame(double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
+
+		const RoundRect& drawFrame(double innerThickness, double outerThickness, Arg::top_<ColorF> topColor, Arg::bottom_<ColorF> bottomColor) const;
 
 		const RoundRect& drawShadow(const Vec2& offset, double blurRadius, double spread = 0.0, const ColorF& color = ColorF{ 0.0, 0.5 }) const;
 
@@ -358,7 +370,7 @@ template <>
 struct std::hash<s3d::RoundRect>
 {
 	[[nodiscard]]
-	size_t operator()(const s3d::RoundRect& value) const noexcept
+	size_t operator ()(const s3d::RoundRect& value) const noexcept
 	{
 		return value.hash();
 	}

@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -544,6 +544,27 @@ namespace s3d
 		}
 
 		return static_cast<P2BodyType>(pImpl->getBody().GetType());
+	}
+
+	P2Body& P2Body::setBullet(const bool bullet) noexcept
+	{
+		if (isEmpty())
+		{
+			return *this;
+		}
+
+		pImpl->getBody().SetBullet(bullet);
+		return *this;
+	}
+
+	bool P2Body::isBullet() const noexcept
+	{
+		if (isEmpty())
+		{
+			return false;
+		}
+
+		return pImpl->getBody().IsBullet();
 	}
 
 	P2Body& P2Body::setFixedRotation(const bool fixedRotation) noexcept

@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -23,7 +23,6 @@
 # endif
 SIV3D_DISABLE_MSVC_WARNINGS_PUSH(4459)
 # include <ThirdParty/DirectXMath/DirectXMath.h>
-# include <ThirdParty/DirectXMath/DirectXCollision.h>
 SIV3D_DISABLE_MSVC_WARNINGS_POP()
 # ifdef __GNUC__
 #	pragma GCC diagnostic pop

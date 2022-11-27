@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -15,6 +15,8 @@
 # include <Siv3D/Wave.hpp>
 # include <Siv3D/Audio.hpp>
 # include <Siv3D/AudioDecoder.hpp>
+# include <Siv3D/System.hpp>
+# include <Siv3D/EngineLog.hpp>
 # include <Siv3D/PseudoThread/PseudoThread.hpp>
 
 namespace s3d
@@ -37,59 +39,47 @@ namespace s3d
 					})
 					.join(U",", U"", U"");
 			}
-
-			__attribute__((import_name("siv3dOpenDialog")))
-			char* siv3dOpenDialogImpl(const char*);
-
-			__attribute__((import_name("siv3dSaveDialog")))
-			extern void siv3dSaveDialog(const char* fileName);
 		}
 
 		Optional<FilePath> OpenFile(const Array<FileFilter>& filters, const FilePathView defaultPath, const StringView title)
-		{
-			const auto filter = detail::TransformFileFilters(filters);
-			auto rawFilePath = detail::siv3dOpenDialogImpl(filter.narrow().c_str());
-
-			if (rawFilePath == nullptr)
+		{		
+			auto openFileFuture = Platform::Web::Dialog::OpenFile(filters);
+			
+			if (auto path = Platform::Web::System::WaitForFutureResolved(openFileFuture))
 			{
-				return (none);
+				return *path;
 			}
 			else
 			{
-				auto filePath = Unicode::FromUTF8(rawFilePath);
-				delete rawFilePath;
-				return (filePath);
-			}	
+				LOG_ERROR(U"cannot use Dialog::OpenFile without Asyncify. Please confirm that linker option contains `-sASYNCIFY=1`");
+				return (none);
+			}
 		}
 
 		Array<FilePath> OpenFiles(const Array<FileFilter>& filters, const FilePathView defaultPath, const StringView title)
 		{
-			const auto filter = detail::TransformFileFilters(filters);
-			auto rawFilePath = detail::siv3dOpenDialogImpl(filter.narrow().c_str());
-
-			if (rawFilePath == nullptr)
+			auto openFileFuture = Platform::Web::Dialog::OpenFiles(filters);
+			
+			if (auto path = Platform::Web::System::WaitForFutureResolved(openFileFuture))
 			{
-				return {};
+				return *path;
 			}
 			else
 			{
-				auto filePath = Unicode::FromUTF8(rawFilePath);
-				delete rawFilePath;
-				return { filePath };
+				LOG_ERROR(U"cannot use Dialog::OpenFiles without Asyncify. Please confirm that linker option contains `-sASYNCIFY=1`");
+				return {};
 			}
 		}
 
 		Optional<FilePath> SaveFile(const Array<FileFilter>& filters, const FilePathView defaultPath, const StringView title)
 		{
-			const auto fileName = FileSystem::FileName(defaultPath);
-			detail::siv3dSaveDialog(fileName.narrow().c_str());
-			
-			return FilePath(U"/dev/save");
+			// [Siv3D Web NoSupport]
+			return (none);
 		}
 
 		Optional<FilePath> SelectFolder(const FilePathView defaultPath, const StringView title)
 		{
-			// [Siv3D ToDo]
+			// [Siv3D Web NoSupport]
 			return (none);
 		}
 	}

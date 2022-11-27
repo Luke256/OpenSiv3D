@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -35,6 +35,16 @@ namespace s3d
 	bool ManagedScript::compiled() const
 	{
 		return pImpl->compiled();
+	}
+
+	void ManagedScript::setTriggerToReload(const std::function<bool(void)>& trigger)
+	{
+		pImpl->setTriggerToReload(trigger);
+	}
+
+	const Array<FilePath>& ManagedScript::getIncludedFiles() const noexcept
+	{
+		return pImpl->getIncludedFiles();
 	}
 
 	void ManagedScript::run() const

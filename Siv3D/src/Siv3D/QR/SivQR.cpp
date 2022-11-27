@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -13,8 +13,9 @@
 # include <Siv3D/QR.hpp>
 # include <Siv3D/Image.hpp>
 # include <Siv3D/StringView.hpp>
+# include <Siv3D/Char.hpp>
 # include <Siv3D/TextWriter.hpp>
-# include <ThirdParty/qr-code-generator-library/QrCode.hpp>
+# include <ThirdParty/qr-code-generator-library/qrcodegen.hpp>
 
 namespace s3d
 {

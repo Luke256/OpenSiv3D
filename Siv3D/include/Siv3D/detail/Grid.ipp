@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -609,7 +609,73 @@ namespace s3d
 	template <class Type, class Allocator>
 	inline void Grid<Type, Allocator>::resize(const size_type w, const size_type h)
 	{
-		resize(w, h, value_type{});
+		const size_t oldWidth = m_width;
+		const size_t newWidth = w;
+		const size_t oldHeight = m_height;
+		const size_t newHeight = h;
+
+		// 幅か高さが 0 なら空の二次元配列にする
+		if ((newWidth == 0) || (newHeight == 0))
+		{
+			m_data.clear();
+			m_width = m_height = 0;
+			return;
+		}
+
+		// 元のサイズが 0 なら
+		if (m_data.isEmpty())
+		{
+			m_data.resize(newWidth * newHeight);
+			m_width = newWidth;
+			m_height = newHeight;
+			return;
+		}
+
+		// 高さが違う場合
+		if (oldHeight != newHeight)
+		{
+			m_data.resize(oldWidth * newHeight);
+			m_height = newHeight;
+		}
+
+		// 幅が違う場合
+		if (oldWidth != newWidth)
+		{
+			if (oldWidth < newWidth) // 幅を広くする場合
+			{
+				m_data.resize(newWidth * newHeight);
+
+				// swap による移動
+				for (size_t y = newHeight; 1 < y; --y)
+				{
+					auto fromEnd = (begin() + (y - 1) * oldWidth + oldWidth) - 1;
+					auto toEnd = (begin() + (y - 1) * newWidth + oldWidth) - 1;
+					
+					for (size_t i = 0; i < oldWidth; ++i)
+					{
+						std::swap(*(fromEnd--), *(toEnd--));
+					}
+				}
+			}
+			else if (newWidth < oldWidth) // 幅を狭くする場合
+			{
+				// swap による移動
+				for (size_t y = 1; y < newHeight; ++y)
+				{
+					auto from = (begin() + y * oldWidth);
+					auto to = (begin() + y * newWidth);
+
+					for (size_t i = 0; i < newWidth; ++i)
+					{
+						std::swap(*(from++), *(to++));
+					}
+				}
+
+				m_data.resize(newWidth * newHeight);
+			}
+
+			m_width = newWidth;
+		}
 	}
 
 	template <class Type, class Allocator>
@@ -621,22 +687,72 @@ namespace s3d
 	template <class Type, class Allocator>
 	inline void Grid<Type, Allocator>::resize(const size_type w, const size_type h, const value_type& value)
 	{
-		if (m_width < w)
+		const size_t oldWidth = m_width;
+		const size_t newWidth = w;
+		const size_t oldHeight = m_height;
+		const size_t newHeight = h;
+
+		// 幅か高さが 0 なら空の二次元配列にする
+		if ((newWidth == 0) || (newHeight == 0))
 		{
-			insert_columns(m_width, (w - m_width), value);
-		}
-		else if (m_width > w)
-		{
-			remove_columns(w, (m_width - w));
+			m_data.clear();
+			m_width = m_height = 0;
+			return;
 		}
 
-		if (m_height < h)
+		// 元のサイズが 0 なら
+		if (m_data.isEmpty())
 		{
-			insert_rows(m_height, (h - m_height), value);
+			m_data.resize((newWidth * newHeight), value);
+			m_width = newWidth;
+			m_height = newHeight;
+			return;
 		}
-		else if (m_height > h)
+
+		// 高さが違う場合
+		if (oldHeight != newHeight)
 		{
-			remove_rows(h, (m_height - h));
+			m_data.resize((oldWidth * newHeight), value);
+			m_height = newHeight;
+		}
+
+		// 幅が違う場合
+		if (oldWidth != newWidth)
+		{
+			if (oldWidth < newWidth) // 幅を広くする場合
+			{
+				m_data.resize((newWidth * newHeight), value);
+
+				// swap による移動
+				for (size_t y = newHeight; 1 < y; --y)
+				{
+					auto fromEnd = (begin() + (y - 1) * oldWidth + oldWidth) - 1;
+					auto toEnd = (begin() + (y - 1) * newWidth + oldWidth) - 1;
+
+					for (size_t i = 0; i < oldWidth; ++i)
+					{
+						std::swap(*(fromEnd--), *(toEnd--));
+					}
+				}
+			}
+			else if (newWidth < oldWidth) // 幅を狭くする場合
+			{
+				// swap による移動
+				for (size_t y = 1; y < newHeight; ++y)
+				{
+					auto from = (begin() + y * oldWidth);
+					auto to = (begin() + y * newWidth);
+
+					for (size_t i = 0; i < newWidth; ++i)
+					{
+						std::swap(*(from++), *(to++));
+					}
+				}
+
+				m_data.resize(newWidth * newHeight);
+			}
+
+			m_width = newWidth;
 		}
 	}
 
@@ -692,28 +808,28 @@ namespace s3d
 	SIV3D_CONCEPT_URBG_
 	inline typename Grid<Type, Allocator>::value_type& Grid<Type, Allocator>::choice(URBG&& rbg)
 	{
-		if (empty())
+		const size_t size = m_data.size();
+
+		if (size == 0)
 		{
-			throw std::out_of_range("Grid::choice(): Grid is empty");
+			throw std::out_of_range{ "Grid::choice(): Grid is empty" };
 		}
 
-		const size_t index = UniformIntDistribution<size_t>(0, size() - 1)(rbg);
-
-		return operator[](index);
+		return m_data[RandomClosedOpen<size_t>(0, size, std::forward<URBG>(rbg))];
 	}
 
 	template <class Type, class Allocator>
 	SIV3D_CONCEPT_URBG_
 	inline const typename Grid<Type, Allocator>::value_type& Grid<Type, Allocator>::choice(URBG&& rbg) const
 	{
-		if (empty())
+		const size_t size = m_data.size();
+
+		if (size == 0)
 		{
-			throw std::out_of_range("Grid::choice(): Grid is empty");
+			throw std::out_of_range{ "Grid::choice(): Grid is empty" };
 		}
 
-		const size_t index = UniformIntDistribution<size_t>(0, size() - 1)(rbg);
-
-		return operator[](index);
+		return m_data[RandomClosedOpen<size_t>(0, size, std::forward<URBG>(rbg))];
 	}
 
 	template <class Type, class Allocator>

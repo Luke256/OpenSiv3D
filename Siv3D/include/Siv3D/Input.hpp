@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -38,6 +38,8 @@ namespace s3d
 		SIV3D_NODISCARD_CXX20
 		constexpr Input(InputDeviceType deviceType, uint8 code, uint8 playerIndex = 0) noexcept;
 
+		/// @brief デバイスの種類を返します。
+		/// @return デバイスの種類
 		[[nodiscard]]
 		constexpr InputDeviceType deviceType() const noexcept;
 
@@ -66,6 +68,14 @@ namespace s3d
 		/// @return 入力オブジェクトが現在のフレームで離された場合 true, それ以外の場合は false
 		[[nodiscard]]
 		bool up() const;
+
+		/// @brief 現在のフレームで、以降の down() と pressed() を強制的に false にします。
+		void clearInput() const;
+		
+		/// @brief 現在のフレームで clearInput() が呼ばれたかを返します。
+		/// @return 現在のフレームで clearInput() が呼ばれている場合 true, それ以外の場合は false
+		[[nodiscard]]
+		bool cleared() const;
 
 		/// @brief 入力オブジェクトが押され続けている時間を返します。
 		/// @remark `up()` が true を返すフレームまで計測結果は有効なため、`if (KeyA.up()) Print << KeyA.pressedDuration()` と書けます。

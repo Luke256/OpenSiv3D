@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -13,10 +13,8 @@
 # include <Siv3D/OrientedBox.hpp>
 # include <Siv3D/Geometry3D.hpp>
 # include <Siv3D/Line3D.hpp>
-# include <Siv3D/Triangle3D.hpp>
-# include <Siv3D/ViewFrustum.hpp>
 # include <Siv3D/Mesh.hpp>
-# include <Siv3D/Quaternion.hpp>
+# include <Siv3D/Ray.hpp>
 # include <Siv3D/FormatFloat.hpp>
 # include <Siv3D/PrimitiveMesh/IPrimitiveMesh.hpp>
 # include <Siv3D/Common/Siv3DEngine.hpp>
@@ -25,19 +23,7 @@ namespace s3d
 {
 	std::array<Vec3, 8> Box::getCorners() const noexcept
 	{
-		const Vec3 s = (size * 0.5);
-
-		return{
-			center.movedBy(-s.x,  s.y, -s.z),
-			center.movedBy( s.x,  s.y, -s.z),
-			center.movedBy(-s.x, -s.y, -s.z),
-			center.movedBy( s.x, -s.y, -s.z),
-			
-			center.movedBy(-s.x,  s.y, s.z),
-			center.movedBy( s.x,  s.y, s.z),
-			center.movedBy(-s.x, -s.y, s.z),
-			center.movedBy( s.x, -s.y, s.z),
-		};
+		return Geometry3D::GetCorners(*this);
 	}
 
 	OrientedBox Box::oriented(const Quaternion& orientation) const noexcept
@@ -47,51 +33,32 @@ namespace s3d
 
 	bool Box::intersects(const Vec3& point) const noexcept
 	{
-		return (detail::FromBox(*this).Contains(SIMD_Float4{ point, 0.0f }) == DirectX::CONTAINS);
+		return Geometry3D::Intersects(*this, point);
 	}
 
 	bool Box::intersects(const Triangle3D& triangle) const noexcept
 	{
-		const auto b = detail::FromBox(*this);
-		return b.Intersects(triangle.p0, triangle.p1, triangle.p2);
+		return Geometry3D::Intersects(*this, triangle);
 	}
 
 	bool Box::intersects(const Sphere& sphere) const noexcept
 	{
-		const auto b = detail::FromBox(*this);
-		return b.Intersects(detail::FromSphere(sphere));
+		return Geometry3D::Intersects(*this, sphere);
 	}
 
 	bool Box::intersects(const Box& box) const noexcept
 	{
-		if (std::abs(center.x - box.center.x) > ((size.x + box.size.x) * 0.5))
-		{
-			return false;
-		}
-
-		if (std::abs(center.y - box.center.y) > ((size.y + box.size.y) * 0.5))
-		{
-			return false;
-		}
-
-		if (std::abs(center.z - box.center.z) > ((size.z + box.size.z) * 0.5))
-		{
-			return false;
-		}
-
-		return true;
+		return Geometry3D::Intersects(*this, box);
 	}
 
 	bool Box::intersects(const OrientedBox& box) const noexcept
 	{
-		const auto b = detail::FromBox(*this);
-		return b.Intersects(detail::FromOrientedBox(box));
+		return Geometry3D::Intersects(*this, box);
 	}
 
 	bool Box::intersects(const ViewFrustum& frustum) const noexcept
 	{
-		const auto b = detail::FromBox(*this);
-		return b.Intersects(frustum.getData());
+		return Geometry3D::Intersects(*this, frustum);
 	}
 
 	Optional<float> Box::intersects(const Ray& ray) const noexcept
@@ -101,47 +68,32 @@ namespace s3d
 
 	bool Box::contains(const Vec3& point) const noexcept
 	{
-		return (detail::FromBox(*this).Contains(SIMD_Float4{ point, 0.0f }) == DirectX::CONTAINS);
+		return Geometry3D::Contains(*this, point);
 	}
 
 	bool Box::contains(const Triangle3D& triangle) const noexcept
 	{
-		const auto b = detail::FromBox(*this);
-		const auto result = b.Contains(triangle.p0, triangle.p1, triangle.p2);
-
-		return (result == DirectX::ContainmentType::CONTAINS);
+		return Geometry3D::Contains(*this, triangle);
 	}
 
 	bool Box::contains(const Sphere& sphere) const noexcept
 	{
-		const auto b = detail::FromBox(*this);
-		const auto result = b.Contains(detail::FromSphere(sphere));
-
-		return (result == DirectX::ContainmentType::CONTAINS);
+		return Geometry3D::Contains(*this, sphere);
 	}
 
 	bool Box::contains(const Box& box) const noexcept
 	{
-		const auto b = detail::FromBox(*this);
-		const auto result = b.Contains(detail::FromBox(box));
-
-		return (result == DirectX::ContainmentType::CONTAINS);
+		return Geometry3D::Contains(*this, box);
 	}
 
 	bool Box::contains(const OrientedBox& box) const noexcept
 	{
-		const auto b = detail::FromBox(*this);
-		const auto result = b.Contains(detail::FromOrientedBox(box));
-
-		return (result == DirectX::ContainmentType::CONTAINS);
+		return Geometry3D::Contains(*this, box);
 	}
 
 	bool Box::contains(const ViewFrustum& frustum) const noexcept
 	{
-		const auto b = detail::FromBox(*this);
-		const auto result = b.Contains(frustum.getData());
-
-		return (result == DirectX::ContainmentType::CONTAINS);
+		return Geometry3D::Contains(*this, frustum);
 	}
 
 	const Box& Box::draw(const ColorF& color) const
@@ -156,6 +108,14 @@ namespace s3d
 	{
 		SIV3D_ENGINE(PrimitiveMesh)->getMesh(PrimitiveMeshType::Box1)
 			.draw(Mat4x4::Scale(size).translated(center), texture, color);
+
+		return *this;
+	}
+
+	const Box& Box::draw(const TextureRegion& textureRegion, const ColorF& color) const
+	{
+		SIV3D_ENGINE(PrimitiveMesh)->getMesh(PrimitiveMeshType::Box1)
+			.draw(Mat4x4::Scale(size).translated(center), textureRegion, color);
 
 		return *this;
 	}
@@ -176,6 +136,14 @@ namespace s3d
 		return *this;
 	}
 
+	const Box& Box::draw(const Quaternion& rotation, const TextureRegion& textureRegion, const ColorF& color) const
+	{
+		SIV3D_ENGINE(PrimitiveMesh)->getMesh(PrimitiveMeshType::Box1)
+			.draw(Mat4x4::Scale(size).rotated(rotation).translated(center), textureRegion, color);
+
+		return *this;
+	}
+
 	const Box& Box::draw(const Mat4x4& mat, const ColorF& color) const
 	{
 		SIV3D_ENGINE(PrimitiveMesh)->getMesh(PrimitiveMeshType::Box1)
@@ -188,6 +156,14 @@ namespace s3d
 	{
 		SIV3D_ENGINE(PrimitiveMesh)->getMesh(PrimitiveMeshType::Box1)
 			.draw((Mat4x4::Scale(size).translated(center) * mat), texture, color);
+
+		return *this;
+	}
+
+	const Box& Box::draw(const Mat4x4& mat, const TextureRegion& textureRegion, const ColorF& color) const
+	{
+		SIV3D_ENGINE(PrimitiveMesh)->getMesh(PrimitiveMeshType::Box1)
+			.draw((Mat4x4::Scale(size).translated(center) * mat), textureRegion, color);
 
 		return *this;
 	}
@@ -208,6 +184,14 @@ namespace s3d
 		return *this;
 	}
 
+	const Box& Box::draw(const TextureRegion& textureRegion, const PhongMaterial& material) const
+	{
+		SIV3D_ENGINE(PrimitiveMesh)->getMesh(PrimitiveMeshType::Box1)
+			.draw(Mat4x4::Scale(size).translated(center), textureRegion, material);
+
+		return *this;
+	}
+
 	const Box& Box::draw(const Quaternion& rotation, const PhongMaterial& material) const
 	{
 		SIV3D_ENGINE(PrimitiveMesh)->getMesh(PrimitiveMeshType::Box1)
@@ -224,6 +208,14 @@ namespace s3d
 		return *this;
 	}
 
+	const Box& Box::draw(const Quaternion& rotation, const TextureRegion& textureRegion, const PhongMaterial& material) const
+	{
+		SIV3D_ENGINE(PrimitiveMesh)->getMesh(PrimitiveMeshType::Box1)
+			.draw(Mat4x4::Scale(size).rotated(rotation).translated(center), textureRegion, material);
+
+		return *this;
+	}
+
 	const Box& Box::draw(const Mat4x4& mat, const PhongMaterial& material) const
 	{
 		SIV3D_ENGINE(PrimitiveMesh)->getMesh(PrimitiveMeshType::Box1)
@@ -236,6 +228,14 @@ namespace s3d
 	{
 		SIV3D_ENGINE(PrimitiveMesh)->getMesh(PrimitiveMeshType::Box1)
 			.draw((Mat4x4::Scale(size).translated(center) * mat), texture, material);
+
+		return *this;
+	}
+
+	const Box& Box::draw(const Mat4x4& mat, const TextureRegion& textureRegion, const PhongMaterial& material) const
+	{
+		SIV3D_ENGINE(PrimitiveMesh)->getMesh(PrimitiveMeshType::Box1)
+			.draw((Mat4x4::Scale(size).translated(center) * mat), textureRegion, material);
 
 		return *this;
 	}

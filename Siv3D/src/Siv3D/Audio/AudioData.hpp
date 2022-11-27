@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -26,6 +26,8 @@ namespace s3d
 
 		struct Null {};
 
+		struct Dynamic {};
+
 		struct TextToSpeech {};
 
 		AudioData() = default;
@@ -37,6 +39,8 @@ namespace s3d
 		AudioData(SoLoud::Soloud* pSoloud, FilePathView path);
 
 		AudioData(SoLoud::Soloud* pSoloud, FilePathView path, uint64 loopBegin);
+
+		AudioData(Dynamic, SoLoud::Soloud* pSoloud, const std::shared_ptr<IAudioStream>& pAudioStream, Arg::sampleRate_<uint32> sampleRate);
 
 		AudioData(TextToSpeech, SoLoud::Soloud* pSoloud, StringView text, const KlattTTSParameters& param);
 

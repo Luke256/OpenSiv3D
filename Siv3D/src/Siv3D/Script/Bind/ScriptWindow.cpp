@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -11,6 +11,7 @@
 
 # include <Siv3D/Script.hpp>
 # include <Siv3D/Window.hpp>
+# include <Siv3D/WindowState.hpp>
 
 namespace s3d
 {
@@ -48,17 +49,17 @@ namespace s3d
 
 	static bool WindowResizeActual(Point size, bool centering)
 	{
-		return Window::Resize(size, Centering{ centering });
+		return Window::ResizeActual(size, Centering{ centering });
 	}
 
 	static bool WindowResizeActual2(int32 w, int32 h, bool centering)
 	{
-		return Window::Resize(w, h, Centering{ centering });
+		return Window::ResizeActual(w, h, Centering{ centering });
 	}
 
 	void RegisterWindow(asIScriptEngine* engine)
 	{
-		int32 r = 0;
+		[[maybe_unused]] int32 r = 0;
 
 		r = engine->SetDefaultNamespace("Window"); assert(r >= 0);
 		{

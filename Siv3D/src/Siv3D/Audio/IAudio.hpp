@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -44,6 +44,8 @@ namespace s3d
 		virtual Audio::IDType createStreamingNonLoop(FilePathView path) = 0;
 
 		virtual Audio::IDType createStreamingLoop(FilePathView path, uint64 loopBegin) = 0;
+
+		virtual Audio::IDType createDynamic(const std::shared_ptr<IAudioStream>& pAudioStream, Arg::sampleRate_<uint32> sampleRate) = 0;
 
 		virtual void release(Audio::IDType handleID) = 0;
 

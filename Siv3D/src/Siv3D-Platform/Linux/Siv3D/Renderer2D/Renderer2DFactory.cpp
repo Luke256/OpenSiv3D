@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -12,6 +12,7 @@
 # include <Siv3D/EngineOptions.hpp>
 # include <Siv3D/Renderer2D/Null/CRenderer2D_Null.hpp>
 # include <Siv3D/Renderer2D/GL4/CRenderer2D_GL4.hpp>
+# include <Siv3D/Renderer2D/GLES3/CRenderer2D_GLES3.hpp>
 
 namespace s3d
 {
@@ -20,6 +21,10 @@ namespace s3d
 		if (g_engineOptions.renderer == EngineOption::Renderer::Headless)
 		{
 			return new CRenderer2D_Null;
+		}
+		else if (g_engineOptions.renderer == EngineOption::Renderer::WebGL2)
+		{
+			return new CRenderer2D_GLES3;
 		}
 		else
 		{

@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -29,7 +29,7 @@ namespace s3d
 
 		inline constexpr int16 FloatToSint16(float f) noexcept
 		{
-			const int32 i = static_cast<int32>(f * 32767.0f);
+			const int32 i = static_cast<int32>(f * 32768.0f);
 
 			return static_cast<int16>(Clamp(i, -32768, 32767));
 		}

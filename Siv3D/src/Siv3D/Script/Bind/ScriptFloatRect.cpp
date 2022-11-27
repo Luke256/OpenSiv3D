@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -42,7 +42,7 @@ namespace s3d
 	{
 		constexpr char TypeName[] = "FloatRect";
 
-		int32 r = 0;
+		[[maybe_unused]] int32 r = 0;
 		r = engine->RegisterObjectProperty(TypeName, "float left", asOFFSET(FloatRect, left)); assert(r >= 0);
 		r = engine->RegisterObjectProperty(TypeName, "float top", asOFFSET(FloatRect, top)); assert(r >= 0);
 		r = engine->RegisterObjectProperty(TypeName, "float right", asOFFSET(FloatRect, right)); assert(r >= 0);

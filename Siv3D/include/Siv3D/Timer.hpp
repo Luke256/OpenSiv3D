@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -11,13 +11,14 @@
 
 # pragma once
 # include "Common.hpp"
-# include "ISteadyClock.hpp"
-# include "Time.hpp"
 # include "Duration.hpp"
+# include "String.hpp"
 # include "PredefinedYesNo.hpp"
 
 namespace s3d
 {
+	class ISteadyClock;
+
 	/// @brief タイマー
 	class Timer
 	{
@@ -28,7 +29,7 @@ namespace s3d
 		/// @param startImmediately 即座に計測を開始する場合は `StartImmediately::Yes`
 		/// @param pSteadyClock 基準時刻取得用のカスタム関数。nullptr の場合はシステム時刻
 		SIV3D_NODISCARD_CXX20
-		explicit Timer(const Duration& duration = SecondsF(0), StartImmediately startImmediately = StartImmediately::No, ISteadyClock* pSteadyClock = nullptr);
+		explicit Timer(const Duration& duration = SecondsF{ 0 }, StartImmediately startImmediately = StartImmediately::No, ISteadyClock* pSteadyClock = nullptr);
 
 		/// @brief タイマーが動作中であるかを示します（開始後の一時停止も動作中に含みます）。
 		/// @return タイマーが開始されている、または開始後一時停止中である場合 true, それ以外の場合は false
@@ -228,7 +229,7 @@ namespace s3d
 	# else
 
 		/// @brief 残り時間を比較します。
-		/// @paramt タイマー
+		/// @param t タイマー
 		/// @param time 比較する時間
 		/// @return 比較の結果
 		[[nodiscard]]
@@ -238,7 +239,7 @@ namespace s3d
 		}
 
 		/// @brief 残り時間を比較します。
-		/// @paramt タイマー
+		/// @param t タイマー
 		/// @param time 比較する時間
 		/// @return 比較の結果
 		[[nodiscard]]
@@ -248,7 +249,7 @@ namespace s3d
 		}
 
 		/// @brief 残り時間を比較します。
-		/// @paramt タイマー
+		/// @param t タイマー
 		/// @param time 比較する時間
 		/// @return 比較の結果
 		[[nodiscard]]
@@ -258,7 +259,7 @@ namespace s3d
 		}
 
 		/// @brief 残り時間を比較します。
-		/// @paramt タイマー
+		/// @param t タイマー
 		/// @param time 比較する時間
 		/// @return 比較の結果
 		[[nodiscard]]
@@ -269,7 +270,7 @@ namespace s3d
 
 		/// @brief 残り時間を比較します。
 		/// @param time 比較する時間
-		/// @paramt タイマー
+		/// @param t タイマー
 		/// @return 比較の結果
 		[[nodiscard]]
 		friend bool operator <(const MicrosecondsF& time, const Timer& t)
@@ -279,7 +280,7 @@ namespace s3d
 
 		/// @brief 残り時間を比較します。
 		/// @param time 比較する時間
-		/// @paramt タイマー
+		/// @param t タイマー
 		/// @return 比較の結果
 		[[nodiscard]]
 		friend bool operator <=(const MicrosecondsF& time, const Timer& t)
@@ -289,7 +290,7 @@ namespace s3d
 
 		/// @brief 残り時間を比較します。
 		/// @param time 比較する時間
-		/// @paramt タイマー
+		/// @param t タイマー
 		/// @return 比較の結果
 		[[nodiscard]]
 		friend bool operator >(const MicrosecondsF& time, const Timer& t)
@@ -299,7 +300,7 @@ namespace s3d
 
 		/// @brief 残り時間を比較します。
 		/// @param time 比較する時間
-		/// @paramt タイマー
+		/// @param t タイマー
 		/// @return 比較の結果
 		[[nodiscard]]
 		friend bool operator >=(const MicrosecondsF& time, const Timer& t)
@@ -323,10 +324,7 @@ namespace s3d
 		/// @brief 
 		/// @param formatData 
 		/// @param value 
-		friend void Formatter(FormatData& formatData, const Timer& value)
-		{
-			formatData.string.append(value.format());
-		}
+		friend void Formatter(FormatData& formatData, const Timer& value);
 
 	private:
 
@@ -343,5 +341,3 @@ namespace s3d
 		bool m_pausing = true;
 	};
 }
-
-# include "detail/Timer.ipp"

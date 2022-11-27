@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -153,6 +153,12 @@ namespace s3d
 		return (not m_data.empty());
 	}
 
+	template <class Type>
+	inline Type Image::horizontalAspectRatio() const noexcept
+	{
+		return size().horizontalAspectRatio();
+	}
+
 	inline void Image::shrink_to_fit()
 	{
 		m_data.shrink_to_fit();
@@ -293,95 +299,6 @@ namespace s3d
 	inline Image::const_reverse_iterator Image::crend() const noexcept
 	{
 		return m_data.crend();
-	}
-
-	inline void Image::fill(const Color color) noexcept
-	{
-		Color* pDst = m_data.data();
-		Color* const pDstEnd = pDst + m_data.size();
-
-		while (pDst != pDstEnd)
-		{
-			*pDst++ = color;
-		}
-	}
-
-	inline void Image::resize(const size_t width, const size_t height)
-	{
-		resize(Size(width, height));
-	}
-
-	inline void Image::resize(const Size size)
-	{
-		if (not detail::IsValidImageSize(size))
-		{
-			return clear();
-		}
-
-		if (size == Size(m_width, m_height))
-		{
-			return;
-		}
-
-		m_data.resize(size.x * size.y);
-		m_width		= static_cast<uint32>(size.x);
-		m_height	= static_cast<uint32>(size.y);
-	}
-
-	inline void Image::resize(const size_t width, const size_t height, const Color fillColor)
-	{
-		resize(Size(width, height), fillColor);
-	}
-
-	inline void Image::resize(const Size size, const Color fillColor)
-	{
-		if (not detail::IsValidImageSize(size))
-		{
-			return clear();
-		}
-
-		if (size == Size(m_width, m_height))
-		{
-			return;
-		}
-
-		m_data.assign(size.x * size.y, fillColor);
-		m_width		= static_cast<uint32>(size.x);
-		m_height	= static_cast<uint32>(size.y);
-	}
-
-	inline void Image::resizeRows(const size_t rows, const Color fillColor)
-	{
-		if (rows == m_height)
-		{
-			return;
-		}
-
-		if (not detail::IsValidImageSize(Size(m_width, rows)))
-		{
-			return clear();
-		}
-
-		if (rows < m_height)
-		{
-			m_data.resize(m_width * rows);
-		}
-		else
-		{
-			m_data.insert(m_data.end(), m_width * (rows - m_height), fillColor);
-		}
-
-		m_height = static_cast<uint32>(rows);
-	}
-
-	inline Color Image::getPixel(const int32 x, const int32 y, const ImageAddressMode addressMode) const
-	{
-		return getPixel(Size{ x, y }, addressMode);
-	}
-
-	inline ColorF Image::samplePixel(const double x, const double y, const ImageAddressMode addressMode) const
-	{
-		return samplePixel(Vec2{ x, y }, addressMode);
 	}
 
 	template <class Fty>

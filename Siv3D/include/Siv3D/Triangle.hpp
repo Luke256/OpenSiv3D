@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -183,9 +183,11 @@ namespace s3d
 		[[nodiscard]]
 		constexpr Line side(size_t index) const;
 
-		[[nodiscard]] value_type area() const noexcept;
+		[[nodiscard]]
+		constexpr value_type area() const noexcept;
 
-		[[nodiscard]] value_type perimeter() const noexcept;
+		[[nodiscard]]
+		value_type perimeter() const noexcept;
 	
 		[[nodiscard]]
 		constexpr RectF boundingRect() const noexcept;
@@ -280,6 +282,9 @@ namespace s3d
 
 		const Triangle& drawFrame(double innerThickness, double outerThickness, const ColorF& color = Palette::White) const;
 
+		[[nodiscard]]
+		static Triangle FromPoints(const position_type& baseCenter, const position_type& top, double baseLength) noexcept;
+
 		template <class CharType>
 		friend std::basic_ostream<CharType>& operator <<(std::basic_ostream<CharType>& output, const Triangle& value)
 		{
@@ -333,7 +338,7 @@ template <>
 struct std::hash<s3d::Triangle>
 {
 	[[nodiscard]]
-	size_t operator()(const s3d::Triangle& value) const noexcept
+	size_t operator ()(const s3d::Triangle& value) const noexcept
 	{
 		return value.hash();
 	}

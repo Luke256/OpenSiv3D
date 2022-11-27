@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -96,6 +96,7 @@ namespace s3d
 			RegisterOptional(m_engine);
 			RegisterNumber(m_engine);
 			RegisterFloatingPoint(m_engine);
+			RegisterParse(m_engine);
 
 			RegisterDuration(m_engine);
 			RegisterDate(m_engine);
@@ -108,6 +109,12 @@ namespace s3d
 			RegisterMillisecClock(m_engine);
 			RegisterMicrosecClock(m_engine);
 			RegisterRDTSCClock(m_engine);
+
+			RegisterTextEncoding(m_engine);
+			RegisterOpenMode(m_engine);
+			RegisterTextReader(m_engine);
+			RegisterTextWriter(m_engine);
+			RegisterINI(m_engine);
 
 			RegisterSpecialFolder(m_engine);
 			RegisterCopyOption(m_engine);
@@ -156,6 +163,7 @@ namespace s3d
 			RegisterInput(m_engine);
 			RegisterKeyboard(m_engine);
 			RegisterMouse(m_engine);
+			RegisterXInput(m_engine);
 			RegisterImageFormat(m_engine);
 			RegisterImage(m_engine);
 
@@ -178,6 +186,7 @@ namespace s3d
 			RegisterDrawableText(m_engine);
 			RegisterTransformer2D(m_engine);
 			RegisterScopedViewport2D(m_engine);
+			RegisterCamera2DParameters(m_engine);
 			RegisterCameraControl(m_engine);
 			RegisterCamera2D(m_engine); // [Siv3D ToDo]
 
@@ -210,6 +219,8 @@ namespace s3d
 			RegisterTextInputMode(m_engine);
 			RegisterTextInput(m_engine);
 			RegisterTextEditState(m_engine);
+			RegisterLicenseInfo(m_engine);
+			RegisterLicenseManager(m_engine);
 			RegisterSimpleGUI(m_engine);
 			RegisterLanguageCode(m_engine);
 			RegisterTextToSpeech(m_engine);
@@ -363,6 +374,13 @@ namespace s3d
 		return messages;
 	}
 
+	const Array<FilePath>& CScript::getIncludedFiles(const Script::IDType handleID)
+	{
+		assert(m_initialized);
+
+		return m_scripts[handleID]->getIncludedFiles();
+	}
+
 	const Array<String>& CScript::getMessages(const Script::IDType handleID)
 	{
 		assert(m_initialized);
@@ -370,14 +388,14 @@ namespace s3d
 		return m_scripts[handleID]->getMessages();
 	}
 
-	void CScript::setSystemUpdateCallback(const Script::IDType handleID, const std::function<bool(void)>& callback)
+	void CScript::setSystemUpdateCallback(const Script::IDType handleID, const std::function<bool()>& callback)
 	{
 		assert(m_initialized);
 
 		return m_scripts[handleID]->setSystemUpdateCallback(callback);
 	}
 
-	const std::function<bool(void)>& CScript::getSystemUpdateCallback(const uint64 scriptID)
+	const std::function<bool()>& CScript::getSystemUpdateCallback(const uint64 scriptID)
 	{
 		assert(m_initialized);
 

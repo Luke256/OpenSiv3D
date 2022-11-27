@@ -2,14 +2,15 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
 //-----------------------------------------------
 
 # include <Siv3D/TextureRegion.hpp>
+# include <Siv3D/MSDFGlyph.hpp>
 # include <Siv3D/System.hpp>
 # include <Siv3D/Font/IFont.hpp>
 # include <Siv3D/Common/Siv3DEngine.hpp>
@@ -21,7 +22,7 @@ namespace s3d
 	{
 		if (not prerender(font, clusters, true))
 		{
-			return RectF{ 0 };
+			return RectF::Empty();
 		}
 		updateTexture();
 
@@ -97,7 +98,7 @@ namespace s3d
 		}
 
 		// 「.」のグリフ
-		const Array<GlyphCluster> dotGlyphCluster = font.getGlyphClusters(U".", false);
+		const Array<GlyphCluster> dotGlyphCluster = font.getGlyphClusters(U".", false, Ligature::Yes);
 		if (not prerender(font, dotGlyphCluster, true))
 		{
 			// do tnohing
@@ -280,7 +281,7 @@ namespace s3d
 	{
 		if (not prerender(font, { cluster }, false))
 		{
-			return RectF{ 0 };
+			return RectF::Empty();
 		}
 		updateTexture();
 
@@ -395,7 +396,7 @@ namespace s3d
 	{
 		if (not prerender(font, clusters, true))
 		{
-			return RectF{ 0 };
+			return RectF::Empty();
 		}
 
 		const auto& prop = font.getProperty();
@@ -447,7 +448,7 @@ namespace s3d
 	{
 		if (not prerender(font, { cluster }, false))
 		{
-			return RectF{ 0 };
+			return RectF::Empty();
 		}
 
 		const auto& prop = font.getProperty();
@@ -479,7 +480,7 @@ namespace s3d
 
 	bool MSDFGlyphCache::preload(const FontData& font, const StringView s)
 	{
-		return prerender(font, font.getGlyphClusters(s, false), true);
+		return prerender(font, font.getGlyphClusters(s, false, Ligature::Yes), true);
 	}
 
 	const Texture& MSDFGlyphCache::getTexture() noexcept

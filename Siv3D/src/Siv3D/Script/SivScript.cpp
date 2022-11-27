@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -71,7 +71,7 @@ namespace s3d
 		return SIV3D_ENGINE(Script)->reload(m_handle->id(), compileOption);
 	}
 
-	void Script::setSystemUpdateCallback(const std::function<bool(void)>& callback)
+	void Script::setSystemUpdateCallback(const std::function<bool()>& callback)
 	{
 		SIV3D_ENGINE(Script)->setSystemUpdateCallback(m_handle->id(), callback);
 	}
@@ -79,6 +79,11 @@ namespace s3d
 	Array<String> Script::getFunctionDeclarations(const IncludeParamNames includeParamNames) const
 	{
 		return SIV3D_ENGINE(Script)->getFunctionDeclarations(m_handle->id(), includeParamNames);
+	}
+
+	const Array<FilePath>& Script::getIncludedFiles() const noexcept
+	{
+		return SIV3D_ENGINE(Script)->getIncludedFiles(m_handle->id());
 	}
 
 	const Array<String>& Script::getMessages() const

@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -73,7 +73,7 @@ namespace s3d
 
 	bool ImageROI::isEmpty() const noexcept
 	{
-		return (not region.hasArea());
+		return (region.isEmpty());
 	}
 
 	ImageROI& ImageROI::negate()
@@ -369,7 +369,7 @@ namespace s3d
 		// 2. 処理
 		{
 			const cv::Rect roi = OpenCV_Bridge::ToCVRect(region);
-			cv::Mat_<cv::Vec4b> matSrc = OpenCV_Bridge::GetMatView(imageRef);
+			cv::Mat matSrc = OpenCV_Bridge::GetMatView(imageRef);
 			cv::Mat srcROI = matSrc(roi);
 
 			cv::blur(srcROI, srcROI, cv::Size(horizontal * 2 + 1, vertical * 2 + 1), cv::Point(-1, -1), OpenCV_Bridge::ConvertBorderType(borderType));
@@ -401,7 +401,7 @@ namespace s3d
 		// 2. 処理
 		{
 			const cv::Rect roi = OpenCV_Bridge::ToCVRect(region);
-			cv::Mat_<cv::Vec4b> matSrc = OpenCV_Bridge::GetMatView(imageRef);
+			cv::Mat matSrc = OpenCV_Bridge::GetMatView(imageRef);
 			cv::Mat srcROI = matSrc(roi);
 
 			cv::medianBlur(srcROI, srcROI, apertureSize);
@@ -434,7 +434,7 @@ namespace s3d
 		// 2. 処理
 		{
 			const cv::Rect roi = OpenCV_Bridge::ToCVRect(region);
-			cv::Mat_<cv::Vec4b> matSrc = OpenCV_Bridge::GetMatView(imageRef);
+			cv::Mat matSrc = OpenCV_Bridge::GetMatView(imageRef);
 			cv::Mat srcROI = matSrc(roi);
 
 			cv::GaussianBlur(srcROI, srcROI, cv::Size(horizontal * 2 + 1, vertical * 2 + 1), 0.0, 0.0, OpenCV_Bridge::ConvertBorderType(borderType));
@@ -466,7 +466,7 @@ namespace s3d
 		// 2. 処理
 		{
 			const cv::Rect roi = OpenCV_Bridge::ToCVRect(region);
-			cv::Mat_<cv::Vec4b> matSrc = OpenCV_Bridge::GetMatView(imageRef);
+			cv::Mat matSrc = OpenCV_Bridge::GetMatView(imageRef);
 			cv::Mat srcROI = matSrc(roi);
 
 			cv::dilate(srcROI, srcROI, cv::Mat(), cv::Point(-1, -1), iterations);
@@ -493,7 +493,7 @@ namespace s3d
 		// 2. 処理
 		{
 			const cv::Rect roi = OpenCV_Bridge::ToCVRect(region);
-			cv::Mat_<cv::Vec4b> matSrc = OpenCV_Bridge::GetMatView(imageRef);
+			cv::Mat matSrc = OpenCV_Bridge::GetMatView(imageRef);
 			cv::Mat srcROI = matSrc(roi);
 
 			cv::erode(srcROI, srcROI, cv::Mat(), cv::Point(-1, -1), iterations);
@@ -572,7 +572,7 @@ namespace s3d
 
 	bool ImageConstROI::isEmpty() const noexcept
 	{
-		return (not region.hasArea());
+		return (region.isEmpty());
 	}
 
 	void ImageConstROI::paint(Image& dst, const int32 x, const int32 y, const Color& color) const

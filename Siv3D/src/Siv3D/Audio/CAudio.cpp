@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -270,6 +270,22 @@ namespace s3d
 
 		// Audio を作成
 		auto audio = std::make_unique<AudioData>(m_soloud.get(), path, loopBegin);
+
+		if (not audio->isInitialized()) // もし作成に失敗していたら
+		{
+			return Audio::IDType::NullAsset();
+		}
+
+		const String info = detail::ToInfo(audio);
+
+		// Audio を管理に登録
+		return m_audios.add(std::move(audio), info);
+	}
+
+	Audio::IDType CAudio::createDynamic(const std::shared_ptr<IAudioStream>& pAudioStream, const Arg::sampleRate_<uint32> sampleRate)
+	{
+		// Audio を作成
+		auto audio = std::make_unique<AudioData>(AudioData::Dynamic{}, m_soloud.get(), pAudioStream, sampleRate);
 
 		if (not audio->isInitialized()) // もし作成に失敗していたら
 		{

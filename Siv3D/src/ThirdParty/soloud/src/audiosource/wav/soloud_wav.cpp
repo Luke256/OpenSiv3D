@@ -26,8 +26,8 @@ freely, subject to the following restrictions:
 //
 //	[Siv3D]
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -173,6 +173,7 @@ namespace SoLoud
 			mChannels = info.channels;
 		}
 		mData = new float[samples * mChannels];
+		memset(mData, 0, samples * mChannels * sizeof(float));
 		mSampleCount = samples;
 		samples = 0;
 		while(1)
@@ -199,7 +200,7 @@ namespace SoLoud
 	{
 		drmp3 decoder;
 
-		if (!drmp3_init_memory(&decoder, aReader->getMemPtr(), aReader->length(), NULL, NULL))
+		if (!drmp3_init_memory(&decoder, aReader->getMemPtr(), aReader->length(), NULL))
 		{
 			return FILE_LOAD_FAILED;
 		}

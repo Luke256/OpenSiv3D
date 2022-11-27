@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -402,9 +402,16 @@ namespace s3d
 			return *this;
 		}
 
-		for (const auto& element : array)
+		if (array)
 		{
-			m_detail->get().push_back(element.m_detail->get());
+			for (const auto& element : array)
+			{
+				m_detail->get().push_back(element.m_detail->get());
+			}
+		}
+		else
+		{
+			m_detail->get() = nlohmann::json::array();
 		}
 
 		return *this;
@@ -743,6 +750,11 @@ namespace s3d
 		throw Error{ U"JSON::access(): Invalid JSON type" };
 	}
 
+	void JSON::push_back(const JSON& value)
+	{
+		m_detail->get().push_back(value.m_detail->get());
+	}
+
 	void JSON::clear() const
 	{
 		if (not m_isValid)
@@ -905,6 +917,27 @@ namespace s3d
 		return true;
 	}
 
+	Blob JSON::toBSON() const
+	{
+		std::vector<uint8> result;
+		nlohmann::json::to_bson(m_detail->get(), result);
+		return Blob{ result.data(), result.size() };
+	}
+
+	Blob JSON::toCBOR() const
+	{
+		std::vector<uint8> result;
+		nlohmann::json::to_cbor(m_detail->get(), result);
+		return Blob{ result.data(), result.size() };
+	}
+
+	Blob JSON::toMessagePack() const
+	{
+		std::vector<uint8> result;
+		nlohmann::json::to_msgpack(m_detail->get(), result);
+		return Blob{ result.data(), result.size() };
+	}
+
 	JSON JSON::Invalid()
 	{
 		return JSON(Invalid_{});
@@ -961,6 +994,72 @@ namespace s3d
 			}
 
 			throw Error{ U"JSON::Parse(): " + Unicode::Widen(e.what()) };
+		}
+
+		return value;
+	}
+
+	JSON JSON::FromBSON(const Blob& bson, const AllowExceptions allowExceptions)
+	{
+		JSON value{ Invalid_{} };
+
+		try
+		{
+			value.m_detail = std::make_shared<detail::JSONDetail>(detail::JSONDetail::Value(), nlohmann::json::from_bson(bson.begin(), bson.end(), true, allowExceptions.getBool()));
+			value.m_isValid = true;
+		}
+		catch (const std::exception& e)
+		{
+			if (not allowExceptions)
+			{
+				return JSON::Invalid();
+			}
+
+			throw Error{ U"JSON::FromBSON(): " + Unicode::Widen(e.what()) };
+		}
+
+		return value;
+	}
+
+	JSON JSON::FromCBOR(const Blob& cbor, const AllowExceptions allowExceptions)
+	{
+		JSON value{ Invalid_{} };
+
+		try
+		{
+			value.m_detail = std::make_shared<detail::JSONDetail>(detail::JSONDetail::Value(), nlohmann::json::from_cbor(cbor.begin(), cbor.end(), true, allowExceptions.getBool()));
+			value.m_isValid = true;
+		}
+		catch (const std::exception& e)
+		{
+			if (not allowExceptions)
+			{
+				return JSON::Invalid();
+			}
+
+			throw Error{ U"JSON::FromCBOR(): " + Unicode::Widen(e.what()) };
+		}
+
+		return value;
+	}
+
+	JSON JSON::FromMessagePack(const Blob& msgpack, const AllowExceptions allowExceptions)
+	{
+		JSON value{ Invalid_{} };
+
+		try
+		{
+			value.m_detail = std::make_shared<detail::JSONDetail>(detail::JSONDetail::Value(), nlohmann::json::from_msgpack(msgpack.begin(), msgpack.end(), true, allowExceptions.getBool()));
+			value.m_isValid = true;
+		}
+		catch (const std::exception& e)
+		{
+			if (not allowExceptions)
+			{
+				return JSON::Invalid();
+			}
+
+			throw Error{ U"JSON::FromMessagePack(): " + Unicode::Widen(e.what()) };
 		}
 
 		return value;

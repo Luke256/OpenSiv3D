@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -31,6 +31,33 @@ namespace s3d
 			wgpu::BlendFactor::OneMinusSrcAlpha,
 			wgpu::BlendFactor::DstAlpha,
 			wgpu::BlendFactor::OneMinusDstAlpha,
+			wgpu::BlendFactor::Dst,
+
+			wgpu::BlendFactor::OneMinusDst,
+			wgpu::BlendFactor::SrcAlphaSaturated,
+			wgpu::BlendFactor::Zero, // None
+			wgpu::BlendFactor::Zero, // None
+			wgpu::BlendFactor::Zero, // Invalid Value
+
+			wgpu::BlendFactor::Zero, // Invalid Value
+			wgpu::BlendFactor::Constant,
+			wgpu::BlendFactor::OneMinusConstant,
+			wgpu::BlendFactor::Zero, // Invalid Value
+			wgpu::BlendFactor::Zero, // Invalid Value
+		};
+
+		static constexpr wgpu::BlendFactor BlendFactorTableWithoutAlpha[20] =
+		{
+			wgpu::BlendFactor::Zero, // Invalid Value
+			wgpu::BlendFactor::Zero,
+			wgpu::BlendFactor::One,
+			wgpu::BlendFactor::Src,
+			wgpu::BlendFactor::OneMinusSrc,
+
+			wgpu::BlendFactor::One,
+			wgpu::BlendFactor::Zero,
+			wgpu::BlendFactor::One,
+			wgpu::BlendFactor::Zero,
 			wgpu::BlendFactor::Dst,
 
 			wgpu::BlendFactor::OneMinusDst,
@@ -154,7 +181,10 @@ namespace s3d
 		{
 			Array<wgpu::BindGroupLayoutEntry> bindingLayout{};
 
-			for (uint32 i = 0; i < SamplerState::MaxSamplerCount; i++)
+			// for (uint32 i = 0; i < SamplerState::MaxSamplerCount; i++)
+
+			const uint32 maxSamplerCount = shaderStage == wgpu::ShaderStage::Vertex ? 2 : 4;
+			for (uint32 i = 0; i < maxSamplerCount; i++)
 			{
 				bindingLayout << wgpu::BindGroupLayoutEntry
 				{
@@ -200,7 +230,7 @@ namespace s3d
 			return it->second;
 		}
 
-        wgpu::RenderPipelineDescriptor2 desc;
+        wgpu::RenderPipelineDescriptor desc;
 
         wgpu::VertexBufferLayout vertexLayout
         {
@@ -213,25 +243,45 @@ namespace s3d
 		{
 			.module = pShader->getShaderModuleVS(vertexShader),
 			.entryPoint = "main",
-            .bufferCount = 1,
+            .bufferCount = vertexLayout.attributeCount > 0 ? 1u : 0u,
             .buffers = &vertexLayout
 		};
 
-		wgpu::BlendState wgpuBlendState
+		wgpu::BlendState wgpuBlendState;
+
+		if (blendState.enable)
 		{
-			.color =
+			if (renderTargetState.hasAlpha)
 			{
-				.operation = ToEnum<wgpu::BlendOperation>(FromEnum(blendState.op) - 1),
-				.srcFactor = detail::BlendFactorTable[FromEnum(blendState.src)],
-				.dstFactor = detail::BlendFactorTable[FromEnum(blendState.dst)],
-			},
-			.alpha =
-			{
-				.operation = ToEnum<wgpu::BlendOperation>(FromEnum(blendState.opAlpha) - 1),
-				.srcFactor = detail::BlendFactorTable[FromEnum(blendState.srcAlpha)],
-				.dstFactor = detail::BlendFactorTable[FromEnum(blendState.dstAlpha)],
+				wgpuBlendState = wgpu::BlendState
+				{
+					.color =
+					{
+						.operation = ToEnum<wgpu::BlendOperation>(FromEnum(blendState.op) - 1),
+						.srcFactor = detail::BlendFactorTable[FromEnum(blendState.src)],
+						.dstFactor = detail::BlendFactorTable[FromEnum(blendState.dst)],
+					},
+					.alpha =
+					{
+						.operation = ToEnum<wgpu::BlendOperation>(FromEnum(blendState.opAlpha) - 1),
+						.srcFactor = detail::BlendFactorTable[FromEnum(blendState.srcAlpha)],
+						.dstFactor = detail::BlendFactorTable[FromEnum(blendState.dstAlpha)],
+					}
+				};
 			}
-		};
+			else
+			{
+				wgpuBlendState = wgpu::BlendState
+				{
+					.color =
+					{
+						.operation = ToEnum<wgpu::BlendOperation>(FromEnum(blendState.op) - 1),
+						.srcFactor = detail::BlendFactorTableWithoutAlpha[FromEnum(blendState.src)],
+						.dstFactor = detail::BlendFactorTableWithoutAlpha[FromEnum(blendState.dst)],
+					}
+				};
+			}
+		}
 
 		wgpu::ColorTargetState colorTargetState
 		{
@@ -291,7 +341,7 @@ namespace s3d
 			desc.layout = m_device.CreatePipelineLayout(&pipelineLayoutDesc);
 		}
 		
-        auto pipeline = m_device.CreateRenderPipeline2(&desc);
+        auto pipeline = m_device.CreateRenderPipeline(&desc);
         return m_pipelines.emplace(key, pipeline).first->second;
     }
 

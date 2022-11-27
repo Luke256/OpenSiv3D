@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -11,12 +11,14 @@
 
 # pragma once
 # include "Common.hpp"
-# include "ISteadyClock.hpp"
 # include "Duration.hpp"
+# include "String.hpp"
 # include "PredefinedYesNo.hpp"
 
 namespace s3d
 {
+	class ISteadyClock;
+
 	class VariableSpeedStopwatch
 	{
 	public:
@@ -190,10 +192,7 @@ namespace s3d
 		/// @brief 
 		/// @param formatData 
 		/// @param value 
-		friend void Formatter(FormatData& formatData, const VariableSpeedStopwatch& value)
-		{
-			formatData.string.append(value.format());
-		}
+		friend void Formatter(FormatData& formatData, const VariableSpeedStopwatch& value);
 
 	private:
 
@@ -213,5 +212,3 @@ namespace s3d
 		int64 ns() const;
 	};
 }
-
-# include "detail/VariableSpeedStopwatch.ipp"

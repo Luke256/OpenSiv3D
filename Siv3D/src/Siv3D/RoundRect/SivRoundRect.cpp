@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -90,6 +90,19 @@ namespace s3d
 
 			return vertices;
 		}
+	}
+
+	Array<Vec2> RoundRect::outerVertices(const uint32 quality) const
+	{
+		const double rr = Min({ (rect.w * 0.5), (rect.h * 0.5), r });
+
+		if (rr <= 0.0)
+		{
+			return{};
+		}
+
+		const uint32 n = Max(quality, 3u);
+		return detail::GetOuterVertices(*this, 0.0, (n / 24.0f));
 	}
 
 	Polygon RoundRect::asPolygon(const uint32 quality) const
@@ -194,29 +207,98 @@ namespace s3d
 		return *this;
 	}
 
+	const RoundRect& RoundRect::draw(const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
+	{
+		const Float4 color0 = topColor->toFloat4();
+		const Float4 color1 = bottomColor->toFloat4();
+
+		SIV3D_ENGINE(Renderer2D)->addRoundRect(FloatRect{ x, y, (x + w), (y + h) },
+			static_cast<float>(w),
+			static_cast<float>(h),
+			static_cast<float>(r),
+			color0, color1);
+
+		return *this;
+	}
+
 	const RoundRect& RoundRect::drawFrame(const double thickness, const ColorF& color) const
 	{
-		return drawFrame(thickness * 0.5, thickness * 0.5, color);
+		return drawFrame((thickness * 0.5), (thickness * 0.5), color);
+	}
+
+	const RoundRect& RoundRect::drawFrame(const double thickness, const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
+	{
+		return drawFrame((thickness * 0.5), (thickness * 0.5), topColor, bottomColor);
 	}
 
 	const RoundRect& RoundRect::drawFrame(const double innerThickness, const double outerThickness, const ColorF& color) const
 	{
-		if ((rect.w == 0.0) && (rect.h == 0.0))
+		if ((rect.w <= 0.0) || (rect.h <= 0.0)
+			|| (innerThickness < 0.0) || (outerThickness < 0.0)
+			|| ((innerThickness == 0.0) && (outerThickness == 0.0)))
 		{
 			return *this;
 		}
 
-		const Array<Vec2> vertices = detail::GetOuterVertices(*this, (outerThickness - innerThickness) * 0.5, none);
+		if (r <= 0.0)
+		{
+			rect.drawFrame(innerThickness, outerThickness, color);
+			return *this;
+		}
 
-		SIV3D_ENGINE(Renderer2D)->addLineString(
-			LineStyle::Default,
-			vertices.data(),
-			static_cast<uint16>(vertices.size()),
-			none,
-			static_cast<float>(innerThickness + outerThickness),
-			false,
-			color.toFloat4(),
-			CloseRing::Yes
+		const RectF outerRect = rect.stretched(outerThickness);
+		const RoundRect outerRoundRect{ outerRect, Min((r + outerThickness), (Min(outerRect.w, outerRect.h) * 0.5)) };
+		const RectF innerRect = rect.stretched(-innerThickness);
+
+		if ((innerRect.w <= 0.0) || (innerRect.h <= 0.0))
+		{
+			outerRoundRect.draw(color);
+			return *this;
+		}
+
+		const RoundRect innerRoundRect{ innerRect, Clamp((r - innerThickness), 0.0, (Min(innerRect.w, innerRect.h) * 0.5)) };
+
+		SIV3D_ENGINE(Renderer2D)->addRoundRectFrame(
+			outerRoundRect,
+			innerRoundRect,
+			color.toFloat4()
+		);
+
+		return *this;
+	}
+
+	const RoundRect& RoundRect::drawFrame(const double innerThickness, const double outerThickness, const Arg::top_<ColorF> topColor, const Arg::bottom_<ColorF> bottomColor) const
+	{
+		if ((rect.w <= 0.0) || (rect.h <= 0.0)
+			|| (innerThickness < 0.0) || (outerThickness < 0.0)
+			|| ((innerThickness == 0.0) && (outerThickness == 0.0)))
+		{
+			return *this;
+		}
+
+		if (r <= 0.0)
+		{
+			rect.drawFrame(innerThickness, outerThickness, topColor, bottomColor);
+			return *this;
+		}
+
+		const RectF outerRect = rect.stretched(outerThickness);
+		const RoundRect outerRoundRect{ outerRect, Min((r + outerThickness), (Min(outerRect.w, outerRect.h) * 0.5)) };
+		const RectF innerRect = rect.stretched(-innerThickness);
+
+		if ((innerRect.w <= 0.0) || (innerRect.h <= 0.0))
+		{
+			outerRoundRect.draw(topColor, bottomColor);
+			return *this;
+		}
+
+		const RoundRect innerRoundRect{ innerRect, Clamp((r - innerThickness), 0.0, (Min(innerRect.w, innerRect.h) * 0.5)) };
+
+		SIV3D_ENGINE(Renderer2D)->addRoundRectFrame(
+			outerRoundRect,
+			innerRoundRect,
+			topColor->toFloat4(),
+			bottomColor->toFloat4()
 		);
 
 		return *this;

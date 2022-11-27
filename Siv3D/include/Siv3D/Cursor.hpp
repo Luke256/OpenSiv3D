@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -91,7 +91,7 @@ namespace s3d
 		/// @brief マウスカーソルを指定したクライアント座標に移動させます。
 		/// @param x 移動先の X 座標 (ピクセル)
 		/// @param y 移動先の Y 座標 (ピクセル)
-		inline void SetPos(int32 x, int32 y);
+		void SetPos(int32 x, int32 y);
 
 		/// @brief マウスカーソルを指定したクライアント座標に移動させます。
 		/// @param pos 移動先の座標 (ピクセル)

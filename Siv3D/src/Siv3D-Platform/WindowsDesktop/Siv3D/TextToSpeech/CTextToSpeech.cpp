@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -11,7 +11,6 @@
 
 # include <Siv3D/EngineLog.hpp>
 # include <Siv3D/Unicode.hpp>
-# include <Siv3D/Math.hpp>
 # include <Siv3D/FormatInt.hpp>
 # include "CTextToSpeech.hpp"
 
@@ -228,7 +227,7 @@ namespace s3d
 			return;
 		}
 
-		m_volume = Math::Saturate(volume);
+		m_volume = Clamp(volume, 0.0, 1.0);
 
 		m_voice->SetVolume(detail::ConvertVolume(volume));
 	}

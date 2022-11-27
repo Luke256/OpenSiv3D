@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -11,6 +11,9 @@
 
 # include <Siv3D/Font.hpp>
 # include <Siv3D/Error.hpp>
+# include <Siv3D/OutlineGlyph.hpp>
+# include <Siv3D/PolygonGlyph.hpp>
+# include <Siv3D/MeshGlyph.hpp>
 # include <Siv3D/Resource.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include "CFont_Headless.hpp"
@@ -171,9 +174,9 @@ namespace s3d
 		return m_fonts[handleID]->getGlyphIndex(ch);
 	}
 
-	Array<GlyphCluster> CFont_Headless::getGlyphClusters(const Font::IDType handleID, const StringView s, const bool recursive)
+	Array<GlyphCluster> CFont_Headless::getGlyphClusters(const Font::IDType handleID, const StringView s, const bool recursive, const Ligature ligature)
 	{
-		return m_fonts[handleID]->getGlyphClusters(s, recursive);
+		return m_fonts[handleID]->getGlyphClusters(s, recursive, ligature);
 	}
 
 	GlyphInfo CFont_Headless::getGlyphInfo(const Font::IDType handleID, const StringView ch)
@@ -200,9 +203,9 @@ namespace s3d
 		return m_fonts[handleID]->renderOutlineByGlyphIndex(glyphIndex, closeRing);
 	}
 
-	Array<OutlineGlyph> CFont_Headless::renderOutlines(const Font::IDType handleID, const StringView s, const CloseRing closeRing)
+	Array<OutlineGlyph> CFont_Headless::renderOutlines(const Font::IDType handleID, const StringView s, const CloseRing closeRing, const Ligature ligature)
 	{
-		return m_fonts[handleID]->renderOutlines(s, closeRing);
+		return m_fonts[handleID]->renderOutlines(s, closeRing, ligature);
 	}
 
 	PolygonGlyph CFont_Headless::renderPolygon(const Font::IDType handleID, const StringView ch)
@@ -217,9 +220,9 @@ namespace s3d
 		return m_fonts[handleID]->renderPolygonByGlyphIndex(glyphIndex);
 	}
 
-	Array<PolygonGlyph> CFont_Headless::renderPolygons(const Font::IDType handleID, const StringView s)
+	Array<PolygonGlyph> CFont_Headless::renderPolygons(const Font::IDType handleID, const StringView s, const Ligature ligature)
 	{
-		return m_fonts[handleID]->renderPolygons(s);
+		return m_fonts[handleID]->renderPolygons(s, ligature);
 	}
 
 	BitmapGlyph CFont_Headless::renderBitmap(const Font::IDType handleID, const StringView s)
@@ -283,10 +286,10 @@ namespace s3d
 		return glyph;
 	}
 
-	Array<Glyph> CFont_Headless::getGlyphs(const Font::IDType handleID, const StringView s)
+	Array<Glyph> CFont_Headless::getGlyphs(const Font::IDType handleID, const StringView s, const Ligature ligature)
 	{
 		const auto& font = m_fonts[handleID];
-		const Array<GlyphCluster> clusters = font->getGlyphClusters(s, false);
+		const Array<GlyphCluster> clusters = font->getGlyphClusters(s, false, ligature);
 		
 		Array<Glyph> glyphs(Arg::reserve = clusters.size());
 		for(const auto& cluster : clusters)

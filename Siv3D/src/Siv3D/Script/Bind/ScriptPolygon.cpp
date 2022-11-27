@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -112,16 +112,16 @@ namespace s3d
 		return static_cast<bool>(polygon);
 	}
 
-	static Polygon& AddHole(const CScriptArray* hole, bool skipValidation, Polygon& polygon)
+	static bool AddHole(const CScriptArray* hole, Polygon& polygon)
 	{
-		return polygon.addHole(detail::FromScriptArray<Vec2>(hole), SkipValidation{ skipValidation });
+		return polygon.addHole(detail::FromScriptArray<Vec2>(hole));
 	}
 
 	void RegisterPolygon(asIScriptEngine* engine)
 	{
 		constexpr char TypeName[] = "Polygon";
 
-		int32 r = 0;
+		[[maybe_unused]] int32 r = 0;
 		r = engine->RegisterObjectBehaviour(TypeName, asBEHAVE_CONSTRUCT, "void f()", asFUNCTION(DefaultConstruct), asCALL_CDECL_OBJLAST); assert(r >= 0);
 		r = engine->RegisterObjectBehaviour(TypeName, asBEHAVE_CONSTRUCT, "void f(const Polygon& in)", asFUNCTION(CopyConstruct), asCALL_CDECL_OBJLAST); assert(r >= 0);
 		r = engine->RegisterObjectBehaviour(TypeName, asBEHAVE_DESTRUCT, "void f()", asFUNCTION(Destruct), asCALL_CDECL_OBJLAST); assert(r >= 0);
@@ -149,7 +149,13 @@ namespace s3d
 		r = engine->RegisterObjectMethod(TypeName, "size_t num_triangles() const", asMETHODPR(ShapeType, num_triangles, () const, size_t), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod(TypeName, "Triangle triangle(size_t) const", asMETHODPR(ShapeType, triangle, (size_t) const, Triangle), asCALL_THISCALL); assert(r >= 0);
 
-		r = engine->RegisterObjectMethod(TypeName, "Polygon& addHole(const Array<Vec2>& in, bool skipValidation = SkipValidation::No) const", asFUNCTION(AddHole), asCALL_CDECL_OBJLAST); assert(r >= 0);
+		r = engine->RegisterObjectMethod(TypeName, "bool addHole(const RectF& in) const", asMETHODPR(ShapeType, addHole, (const RectF&), bool), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod(TypeName, "bool addHole(const Triangle& in) const", asMETHODPR(ShapeType, addHole, (const Triangle&), bool), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod(TypeName, "bool addHole(const Quad& in) const", asMETHODPR(ShapeType, addHole, (const Quad&), bool), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod(TypeName, "bool addHole(const Circle& in, uint32 quality = 24) const", asMETHODPR(ShapeType, addHole, (const Circle&, uint32), bool), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod(TypeName, "bool addHole(const Ellipse& in, uint32 quality = 24) const", asMETHODPR(ShapeType, addHole, (const Ellipse&, uint32), bool), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod(TypeName, "bool addHole(const RoundRect& in, uint32 quality = 24) const", asMETHODPR(ShapeType, addHole, (const RoundRect&, uint32), bool), asCALL_THISCALL); assert(r >= 0);
+		r = engine->RegisterObjectMethod(TypeName, "bool addHole(const Array<Vec2>& in) const", asFUNCTION(AddHole), asCALL_CDECL_OBJLAST); assert(r >= 0);
 
 		r = engine->RegisterObjectMethod(TypeName, "Polygon movedBy(double, double) const", asMETHODPR(ShapeType, movedBy, (double, double) const, Polygon), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectMethod(TypeName, "Polygon movedBy(Vec2) const", asMETHODPR(ShapeType, movedBy, (Vec2) const, Polygon), asCALL_THISCALL); assert(r >= 0);

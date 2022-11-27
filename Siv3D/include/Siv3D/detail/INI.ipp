@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -13,20 +13,8 @@
 
 namespace s3d
 {
-	inline INI::INI() {}
-
-	inline INI::INI(const FilePathView path, const Optional<TextEncoding>& encoding)
-	{
-		load(path, encoding);
-	}
-
 	template <class Reader, std::enable_if_t<std::is_base_of_v<IReader, Reader> && !std::is_lvalue_reference_v<Reader>>*>
 	inline INI::INI(Reader&& reader, const Optional<TextEncoding>& encoding)
-	{
-		load(std::move(reader), encoding);
-	}
-
-	inline INI::INI(std::unique_ptr<IReader>&& reader, const Optional<TextEncoding>& encoding)
 	{
 		load(std::move(reader), encoding);
 	}
@@ -35,13 +23,6 @@ namespace s3d
 	inline bool INI::load(Reader&& reader, const Optional<TextEncoding>& encoding)
 	{
 		return load(std::make_shared<Reader>(std::move(reader)), encoding);
-	}
-
-	inline void INI::clear()
-	{
-		m_sections.clear();
-
-		m_keyIndices.clear();
 	}
 
 	inline bool INI::isEmpty() const noexcept
@@ -69,9 +50,9 @@ namespace s3d
 		return hasValue(SectionView{}, name);
 	}
 
-	inline const String& INI::getGlobalValue(const NameView name)
+	inline const String& INI::getGlobalValue(const NameView name) const
 	{
-		return getValue(SectionView(), name);
+		return getValue(SectionView{}, name);
 	}
 
 	inline const INI::Value& INI::operator [](const Section_Dot_NameView section_dot_name) const

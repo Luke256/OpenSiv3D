@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -64,7 +64,8 @@ namespace s3d
 		m_window = static_cast<GLFWwindow*>(SIV3D_ENGINE(Window)->getHandle());
 		
 		::glfwMakeContextCurrent(m_window);
-		::glfwSwapInterval(1);
+		// [BUGBUG] calling this without mainloop emits runtime error
+		// ::glfwSwapInterval(1);
 		
 		::glewExperimental = GL_TRUE;
 		if (::glewInit() != GLEW_OK)
@@ -180,7 +181,7 @@ namespace s3d
 
 		m_vSyncEnabled = enabled;
 
-		::glfwSwapInterval(static_cast<int32>(m_vSyncEnabled));
+		// ::glfwSwapInterval(static_cast<int32>(m_vSyncEnabled));
 	}
 
 	bool CRenderer_GLES3::isVSyncEnabled() const

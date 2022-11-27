@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -11,14 +11,16 @@
 
 # include <Siv3D/Audio/IAudio.hpp>
 # include <Siv3D/Common/Siv3DEngine.hpp>
-# include <Siv3D/Math.hpp>
+# include <Siv3D/MathConstants.hpp>
 # include <Siv3D/FileSystem.hpp>
+# include <Siv3D/Char.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include "AudioData.hpp"
 # include "AudioBus.hpp"
 # include <ThirdParty/soloud/include/soloud_wav.h>
 # include <ThirdParty/soloud/include/soloud_wavstream.h>
 # include <ThirdParty/soloud/include/soloud_speech.h>
+# include "DynamicAudioSource.hpp"
 
 namespace s3d
 {
@@ -176,6 +178,19 @@ namespace s3d
 		m_audioSource->setLoopPoint(static_cast<float>(static_cast<double>(loopBegin) / m_sampleRate));
 
 		m_initialized	= true;
+	}
+
+	AudioData::AudioData(Dynamic, SoLoud::Soloud* pSoloud, const std::shared_ptr<IAudioStream>& pAudioStream, const Arg::sampleRate_<uint32> sampleRate)
+		: m_pSoloud{ pSoloud }
+		, m_isStreaming{ true }
+	{
+		std::unique_ptr<DynamicAudioSource> source = std::make_unique<DynamicAudioSource>(pAudioStream, *sampleRate);
+
+		m_sampleRate = *sampleRate;
+		m_lengthSample = (m_sampleRate * 1); // [Siv3D ToDo] この値は 0 にする？
+		m_audioSource = std::move(source);
+
+		m_initialized = true;
 	}
 
 	AudioData::AudioData(TextToSpeech, SoLoud::Soloud* pSoloud, const StringView text, const KlattTTSParameters& param)

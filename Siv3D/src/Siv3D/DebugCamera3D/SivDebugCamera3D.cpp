@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -12,6 +12,7 @@
 # include <Siv3D/DebugCamera3D.hpp>
 # include <Siv3D/Keyboard.hpp>
 # include <Siv3D/Mouse.hpp>
+# include <Siv3D/Cursor.hpp>
 # include <Siv3D/Math.hpp>
 # include <Siv3D/Interpolation.hpp>
 # include <Siv3D/Graphics3D.hpp>

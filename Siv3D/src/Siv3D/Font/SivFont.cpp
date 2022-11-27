@@ -2,14 +2,20 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
 //-----------------------------------------------
 
 # include <Siv3D/Font.hpp>
+# include <Siv3D/PolygonGlyph.hpp>
+# include <Siv3D/MeshGlyph.hpp>
+# include <Siv3D/OutlineGlyph.hpp>
+# include <Siv3D/BitmapGlyph.hpp>
+# include <Siv3D/SDFGlyph.hpp>
+# include <Siv3D/MSDFGlyph.hpp>
 # include <Siv3D/DrawableText.hpp>
 # include <Siv3D/Font/IFont.hpp>
 # include <Siv3D/FreestandingMessageBox/FreestandingMessageBox.hpp>
@@ -188,6 +194,13 @@ namespace s3d
 		return (prop.ascender + prop.descender);
 	}
 
+	double Font::height(const double size) const
+	{
+		const auto& prop = SIV3D_ENGINE(Font)->getProperty(m_handle->id());
+
+		return ((prop.ascender + prop.descender) * (size / prop.fontPixelSize));
+	}
+
 	double Font::spaceWidth() const
 	{
 		return SIV3D_ENGINE(Font)->getProperty(m_handle->id()).spaceWidth;
@@ -242,9 +255,9 @@ namespace s3d
 		return SIV3D_ENGINE(Font)->getGlyphIndex(m_handle->id(), ch);
 	}
 
-	Array<GlyphCluster> Font::getGlyphClusters(const StringView s, const UseFallback useFallback) const
+	Array<GlyphCluster> Font::getGlyphClusters(const StringView s, const UseFallback useFallback, const Ligature ligature) const
 	{
-		return SIV3D_ENGINE(Font)->getGlyphClusters(m_handle->id(), s, useFallback.getBool());
+		return SIV3D_ENGINE(Font)->getGlyphClusters(m_handle->id(), s, useFallback.getBool(), ligature);
 	}
 
 	GlyphInfo Font::getGlyphInfo(const char32 ch) const
@@ -277,9 +290,9 @@ namespace s3d
 		return SIV3D_ENGINE(Font)->renderOutlineByGlyphIndex(m_handle->id(), glyphIndex, closeRing);
 	}
 
-	Array<OutlineGlyph> Font::renderOutlines(const StringView s, const CloseRing closeRing) const
+	Array<OutlineGlyph> Font::renderOutlines(const StringView s, const CloseRing closeRing, const Ligature ligature) const
 	{
-		return SIV3D_ENGINE(Font)->renderOutlines(m_handle->id(), s, closeRing);
+		return SIV3D_ENGINE(Font)->renderOutlines(m_handle->id(), s, closeRing, ligature);
 	}
 
 	PolygonGlyph Font::renderPolygon(const char32 ch) const
@@ -297,9 +310,9 @@ namespace s3d
 		return SIV3D_ENGINE(Font)->renderPolygonByGlyphIndex(m_handle->id(), glyphIndex);
 	}
 
-	Array<PolygonGlyph> Font::renderPolygons(const StringView s) const
+	Array<PolygonGlyph> Font::renderPolygons(const StringView s, const Ligature ligature) const
 	{
-		return SIV3D_ENGINE(Font)->renderPolygons(m_handle->id(), s);
+		return SIV3D_ENGINE(Font)->renderPolygons(m_handle->id(), s, ligature);
 	}
 
 	MeshGlyph Font::createMesh(const char32 ch, const double size) const
@@ -323,9 +336,9 @@ namespace s3d
 		return detail::ToMeshGlyph(polygonGlyph, size, *this);
 	}
 
-	Array<MeshGlyph> Font::createMeshes(const StringView s, const double size) const
+	Array<MeshGlyph> Font::createMeshes(const StringView s, const double size, const Ligature ligature) const
 	{
-		const Array<PolygonGlyph> polygonGlyphs = SIV3D_ENGINE(Font)->renderPolygons(m_handle->id(), s);
+		const Array<PolygonGlyph> polygonGlyphs = SIV3D_ENGINE(Font)->renderPolygons(m_handle->id(), s, ligature);
 
 		return polygonGlyphs.map([size, this](const PolygonGlyph& polygonGlyph) { return detail::ToMeshGlyph(polygonGlyph, size, *this); });
 	}
@@ -395,9 +408,9 @@ namespace s3d
 		return SIV3D_ENGINE(Font)->getGlyph(m_handle->id(), ch);
 	}
 
-	Array<Glyph> Font::getGlyphs(const StringView s) const
+	Array<Glyph> Font::getGlyphs(const StringView s, const Ligature ligature) const
 	{
-		return SIV3D_ENGINE(Font)->getGlyphs(m_handle->id(), s);
+		return SIV3D_ENGINE(Font)->getGlyphs(m_handle->id(), s, ligature);
 	}
 
 	DrawableText Font::operator()(const String& text) const

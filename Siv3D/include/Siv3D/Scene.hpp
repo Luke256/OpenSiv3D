@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -14,6 +14,7 @@
 # include "PointVector.hpp"
 # include "ColorHSV.hpp"
 # include "Window.hpp"
+# include "WindowState.hpp"
 # include "TextureFilter.hpp"
 # include "ResizeMode.hpp"
 
@@ -51,7 +52,7 @@ namespace s3d
 		/// @remark シーンのリサイズモードが `ResizeMode::Keep` でなければ、ウィンドウのリサイズ時に自動的にシーンのサイズも変更されます。
 		/// @param width 新しいシーンの幅（ピクセル）
 		/// @param height 新しいシーンの高さ（ピクセル）
-		inline void Resize(int32 width, int32 height);
+		void Resize(int32 width, int32 height);
 
 		/// @brief 現在のシーンの幅と高さ（ピクセル）を返します。
 		/// @return シーンの幅と高さ（ピクセル）
@@ -61,27 +62,34 @@ namespace s3d
 		/// @brief 現在のシーンの幅（ピクセル）を返します。
 		/// @return シーンの幅（ピクセル）
 		[[nodiscard]]
-		inline int32 Width() noexcept;
+		int32 Width() noexcept;
 
 		/// @brief 現在のシーンの高さ（ピクセル）を返します。
 		/// @return シーンの高さ（ピクセル）
 		[[nodiscard]]
-		inline int32 Height() noexcept;
+		int32 Height() noexcept;
 
 		/// @brief シーンの中心の座標を `Point` 型で返します。
 		/// @return シーンの中心の座標
 		[[nodiscard]]
-		inline Point Center() noexcept;
+		Point Center() noexcept;
 
 		/// @brief シーンの中心の座標を `Vec2` 型で返します。
 		/// @return シーンの中心の座標
 		[[nodiscard]]
-		inline Vec2 CenterF() noexcept;
+		Vec2 CenterF() noexcept;
 
 		/// @brief 左上が (0, 0) で現在のシーンと同じ大きさの `Rect` を返します。
 		/// @return シーンと同じ大きさの `Rect`
 		[[nodiscard]]
-		inline s3d::Rect Rect() noexcept;
+		s3d::Rect Rect() noexcept;
+
+		/// @brief シーンのアスペクト比（幅 / 高さ）を返します。
+		/// @tparam Type アスペクト比の型
+		/// @return シーンのアスペクト比（幅 / 高さ）
+		template <class Type = double>
+		[[nodiscard]]
+		inline Type HorizontalAspectRatio() noexcept;
 
 		/// @brief ウィンドウのサイズを変更したときに、シーンをどのようにリサイズするかを設定します。
 		/// @reamrk デフォルトは `Scene::DefaultResizeMode` です。	
@@ -132,11 +140,11 @@ namespace s3d
 		[[nodiscard]]
 		double GetMaxDeltaTime() noexcept;
 
-		[[nodiscard]]
 		/// @brief 前回の System::Update() からの経過時間（秒）を、`Scene::GetMaxDeltaTime()` を超えない値で返します。
 		/// @remark この値をもとにアニメーションやイベントの処理などを行うことで、フレームレートが上下しても対応できます。
 		/// @remark `System::Update()` を呼ぶことで値が更新されます。
 		/// @return 前回のフレームからの経過時間（秒）と `Scene::GetMaxDeltaTime()` のうち、小さいほうの値
+		[[nodiscard]]
 		double DeltaTime() noexcept;
 
 		/// @brief アプリケーションが起動してからの経過時間（秒）を返します。

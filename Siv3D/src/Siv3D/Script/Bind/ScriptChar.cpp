@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -69,7 +69,7 @@ namespace s3d
 
 	void RegisterChar(asIScriptEngine* engine)
 	{
-		int32 r = 0;
+		[[maybe_unused]] int32 r = 0;
 
 		r = engine->RegisterObjectMethod("char32", "uint32 opImplConv() const", asFUNCTION(ConvToUint32), asCALL_CDECL_OBJLAST); assert(r >= 0);
 		r = engine->RegisterObjectMethod("char32", "char32& opAssign(uint32)", asFUNCTION(AssignUint32), asCALL_CDECL_OBJLAST); assert(r >= 0);

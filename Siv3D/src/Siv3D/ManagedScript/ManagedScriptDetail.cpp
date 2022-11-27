@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -47,11 +47,18 @@ namespace s3d
 
 		m_callback = [
 			&requestReload = m_requestReload,
+			&trigegrToReload = m_triggerToReload,
 			path = fullpath,
 			watcher = (isRsource ? DirectoryWatcher{} : DirectoryWatcher{ FileSystem::ParentPath(fullpath) })
 		]()
 		{
 			requestReload = detail::HasChanged(path, watcher.retrieveChanges());
+
+			if (trigegrToReload)
+			{
+				requestReload |= trigegrToReload();
+			}
+
 			return (not requestReload);
 		};
 
@@ -73,6 +80,16 @@ namespace s3d
 	bool ManagedScript::ManagedScriptDetail::compiled() const
 	{
 		return static_cast<bool>(m_main);
+	}
+
+	void ManagedScript::ManagedScriptDetail::setTriggerToReload(const std::function<bool()>& trigger)
+	{
+		m_triggerToReload = trigger;
+	}
+
+	const Array<FilePath>& ManagedScript::ManagedScriptDetail::getIncludedFiles() const noexcept
+	{
+		return m_script.getIncludedFiles();
 	}
 
 	void ManagedScript::ManagedScriptDetail::run()

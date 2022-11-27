@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -14,11 +14,18 @@
 # include "Common.hpp"
 # include "PointVector.hpp"
 # include "ColorHSV.hpp"
-# include "SIMDMath.hpp"
-# include "BasicCamera3D.hpp"
+# include "Optional.hpp"
+# include "SIMDCollision.hpp"
 
 namespace s3d
 {
+	class BasicCamera3D;
+	struct Triangle3D;
+	struct Sphere;
+	struct OrientedBox;
+	struct Ray;
+	struct Quaternion;
+
 	class ViewFrustum
 	{
 	public:

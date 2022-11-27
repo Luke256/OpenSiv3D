@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -73,9 +73,9 @@ namespace s3d
 		wgpu::RenderPassColorAttachment colorAttachment
 		{
 			.view = m_sceneBuffers.scene->getTextureView(),
-			.loadOp = wgpu::LoadOp::Clear,
+			.loadOp = wgpu::LoadOp::Load,
 			.storeOp = wgpu::StoreOp::Store,
-			.clearColor = 
+			.clearValue = 
 			{
 				.r = m_backgroundColor.r,
 				.g = m_backgroundColor.g,
@@ -241,7 +241,7 @@ namespace s3d
 			WGPUSwapChainDescriptor desc
 			{
 				.format = WGPUTextureFormat_BGRA8Unorm,
-				.usage = WGPUTextureUsage_OutputAttachment,
+				.usage = WGPUTextureUsage_RenderAttachment,
 				.width = static_cast<uint32>(m_backBufferSize.x),
 				.height = static_cast<uint32>(m_backBufferSize.y),
 			};

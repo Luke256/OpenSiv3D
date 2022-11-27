@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -98,7 +98,7 @@ namespace s3d
 		const char PrintBufferTypeName[] = "PrintBuffer";
 		const char PrintTypeName[] = "Print_impl";
 
-		int32 r = 0;
+		[[maybe_unused]] int32 r = 0;
 		r = engine->RegisterObjectBehaviour(PrintBufferTypeName, asBEHAVE_FACTORY, "PrintBuffer@ f()", asFUNCTIONPR(PrintBufferWrapper::Create, (), PrintBufferWrapper*), asCALL_CDECL); assert(r >= 0);
 		r = engine->RegisterObjectBehaviour(PrintBufferTypeName, asBEHAVE_ADDREF, "void f()", asMETHOD(PrintBufferWrapper, AddRef), asCALL_THISCALL); assert(r >= 0);
 		r = engine->RegisterObjectBehaviour(PrintBufferTypeName, asBEHAVE_RELEASE, "void f()", asMETHOD(PrintBufferWrapper, Release), asCALL_THISCALL); assert(r >= 0);

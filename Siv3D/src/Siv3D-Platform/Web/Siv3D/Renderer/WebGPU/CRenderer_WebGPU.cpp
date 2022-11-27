@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -83,7 +83,7 @@ namespace s3d
 
         wgpu::SwapChainDescriptor swapChainDescripter
         {
-            .usage = wgpu::TextureUsage::OutputAttachment,
+            .usage = wgpu::TextureUsage::RenderAttachment,
             .presentMode = wgpu::PresentMode::Fifo,
             .width = static_cast<uint32_t>(frameBufferSize.x),
             .height = static_cast<uint32_t>(frameBufferSize.y),
@@ -121,7 +121,7 @@ namespace s3d
 		// Scene に 2D 描画
 		{
 			auto pass = m_backBuffer->clear(m_renderingCommandEncoder);
-			pass.EndPass();
+			pass.End();
 		}
 		
 		const auto& windowState = SIV3D_ENGINE(Window)->getState();
@@ -144,9 +144,6 @@ namespace s3d
 	{
 		// Scene に 2D 描画
 		{
-			auto pass = m_backBuffer->begin(m_renderingCommandEncoder);
-			pass.EndPass();
-
 			pRenderer3D->flush(m_renderingCommandEncoder);
 			pRenderer2D->flush(m_renderingCommandEncoder);
 		}
@@ -158,9 +155,9 @@ namespace s3d
 			wgpu::RenderPassColorAttachment colorAttachment
 			{
 				.view = backBufferView,
-				.loadOp = wgpu::LoadOp::Clear,
+				.loadOp = wgpu::LoadOp::Load,
 				.storeOp = wgpu::StoreOp::Store,
-				.clearColor = 
+				.clearValue = 
 				{
 					.r = 0.0,
 					.g = 0.0,
@@ -179,7 +176,7 @@ namespace s3d
 			{
 				m_backBuffer->updateFromSceneBuffer(pass);
 			}
-			pass.EndPass();
+			pass.End();
 		}
 
 		m_commandBuffers << m_renderingCommandEncoder.Finish();

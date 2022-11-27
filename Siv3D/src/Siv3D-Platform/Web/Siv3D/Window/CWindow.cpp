@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -234,7 +234,12 @@ namespace s3d
 	{
 		LOG_TRACE(U"CWindow::resizeByVirtualSize({})"_fmt(virtualSize));
 
-		::glfwSetWindowSize(m_window, virtualSize.x, virtualSize.y);
+		m_resizingWindow = true;
+		{
+			::glfwSetWindowSize(m_window, virtualSize.x, virtualSize.y);
+		}
+		m_resizingWindow = false;
+
 		return true;
 	}
 
@@ -288,6 +293,11 @@ namespace s3d
 		return false;
 	}
 
+	void CWindow::setTaskbarProgressBar(double)
+	{
+		// do nothing
+	}
+
 	void CWindow::updateState()
 	{
 		// frameBufferSize
@@ -338,7 +348,11 @@ namespace s3d
 		
 		CWindow* pWindow = static_cast<CWindow*>(::glfwGetWindowUserPointer(window));
 		pWindow->m_state.bounds.size = Size(width, height);
-		pWindow->m_state.virtualSize = Size(width, height);
+
+		if (pWindow->m_state.style == WindowStyle::Sizable || pWindow->m_resizingWindow)
+		{
+			pWindow->m_state.virtualSize = Size(width, height);
+		}
 	}
 
 	void CWindow::OnFrameBufferSize(GLFWwindow* window, const int width, const int height)

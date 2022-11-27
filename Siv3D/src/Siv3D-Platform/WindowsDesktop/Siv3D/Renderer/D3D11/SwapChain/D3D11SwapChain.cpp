@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -11,6 +11,7 @@
 
 # include <Siv3D/DLL.hpp>
 # include <Siv3D/Window.hpp>
+# include <Siv3D/WindowState.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include "D3D11SwapChain.hpp"
 # include <dwmapi.h>

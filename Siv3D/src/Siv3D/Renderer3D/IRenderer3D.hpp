@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -20,6 +20,7 @@
 # include <Siv3D/VertexShader.hpp>
 # include <Siv3D/PixelShader.hpp>
 # include <Siv3D/Texture.hpp>
+# include <Siv3D/TextureRegion.hpp>
 # include <Siv3D/RenderTexture.hpp>
 # include <Siv3D/ConstantBuffer.hpp>
 # include <Siv3D/Mesh.hpp>
@@ -49,6 +50,8 @@ namespace s3d
 		virtual void addMesh(uint32 startIndex, uint32 indexCount, const Mesh& mesh, const PhongMaterial& material) = 0;
 
 		virtual void addTexturedMesh(uint32 startIndex, uint32 indexCount, const Mesh& mesh, const Texture& texture, const PhongMaterial& material) = 0;
+
+		virtual void addTexturedMesh(uint32 startIndex, uint32 indexCount, const Mesh& mesh, const TextureRegion& textureRegion, const PhongMaterial& material) = 0;
 
 		virtual void addLine3D(const Float3& begin, const Float3& end, const Float4(&colors)[2]) = 0;
 

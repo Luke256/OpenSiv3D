@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -133,6 +133,44 @@ namespace s3d
 			return SIV3D_ENGINE(Gamepad)->up(m_playerIndex, m_code);
 		case InputDeviceType::XInput:
 			return SIV3D_ENGINE(XInput)->up(m_playerIndex, m_code);
+		default:
+			return false;
+		}
+	}
+
+	void Input::clearInput() const
+	{
+		switch (m_deviceType)
+		{
+		case InputDeviceType::Keyboard:
+			SIV3D_ENGINE(Keyboard)->clearInput(m_code);
+			break;
+		case InputDeviceType::Mouse:
+			SIV3D_ENGINE(Mouse)->clearInput(m_code);
+			break;
+		case InputDeviceType::Gamepad:
+			SIV3D_ENGINE(Gamepad)->clearInput(m_playerIndex, m_code);
+			break;
+		case InputDeviceType::XInput:
+			SIV3D_ENGINE(XInput)->clearInput(m_playerIndex, m_code);
+			break;
+		default:
+			break;
+		}
+	}
+
+	bool Input::cleared() const
+	{
+		switch (m_deviceType)
+		{
+		case InputDeviceType::Keyboard:
+			return SIV3D_ENGINE(Keyboard)->cleared(m_code);
+		case InputDeviceType::Mouse:
+			return SIV3D_ENGINE(Mouse)->cleared(m_code);
+		case InputDeviceType::Gamepad:
+			return SIV3D_ENGINE(Gamepad)->cleared(m_playerIndex, m_code);
+		case InputDeviceType::XInput:
+			return SIV3D_ENGINE(XInput)->cleared(m_playerIndex, m_code);
 		default:
 			return false;
 		}

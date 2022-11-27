@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -11,11 +11,12 @@
 
 # pragma once
 # include "Common.hpp"
-# include "FormatData.hpp"
 # include "FormatLiteral.hpp"
 
 namespace s3d
 {
+	struct FormatData;
+
 	/// @brief 4 次元のベクトル
 	/// @tparam Type ベクトルの要素の型
 	template <class Type>
@@ -428,7 +429,7 @@ template <class Type>
 struct std::hash<s3d::Vector4D<Type>>
 {
 	[[nodiscard]]
-	size_t operator()(const s3d::Vector4D<Type>& value) const noexcept
+	size_t operator ()(const s3d::Vector4D<Type>& value) const noexcept
 	{
 		return value.hash();
 	}

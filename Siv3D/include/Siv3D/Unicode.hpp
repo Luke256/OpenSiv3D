@@ -2,19 +2,22 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
 //-----------------------------------------------
 
 # pragma once
-# include "Fwd.hpp"
-# include "StringView.hpp"
+# include <string>
+# include "Utility.hpp"
 
 namespace s3d
 {
+	class String;
+	class StringView;
+
 	/// @brief 文字列のエンコードの変換
 	namespace Unicode
 	{
@@ -98,10 +101,10 @@ namespace s3d
 		[[nodiscard]]
 		std::u16string UTF8ToUTF16(std::string_view s);
 
-		[[nodiscard]]
 		/// @brief UTF-8 文字列を UTF-32 文字列に変換します。
 		/// @param s UTF-8 文字列
 		/// @return 変換された文字列
+		[[nodiscard]]
 		std::u32string UTF8ToUTF32(std::string_view s);
 
 		/// @brief UTF-16 文字列を UTF-8 文字列に変換します。

@@ -2,20 +2,22 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
 //-----------------------------------------------
 
 # include <Siv3D/Error.hpp>
+# include <Siv3D/Unicode.hpp>
 # include <Siv3D/DLL.hpp>
 # include <Siv3D/EngineLog.hpp>
 # include "CAudioCodec.hpp"
 
 extern "C"
 {
+# include <libavcodec/avcodec.h>
 # include <libavformat/avformat.h>
 # include <libswresample/swresample.h>
 }
@@ -253,7 +255,7 @@ namespace s3d
 
 			AVStream* m_audio_stream = nullptr;
 			int m_audio_stream_idx = 0;
-			AVCodec* m_codec = nullptr;
+			const AVCodec* m_codec = nullptr;
 			int m_out_count = 0;
 			int m_out_sample_rate = 0;
 			int64_t m_duration = 0;

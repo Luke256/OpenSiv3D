@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -35,6 +35,8 @@ namespace s3d
 	void CRenderer3D_Null::addMesh(uint32, uint32, const Mesh&, const PhongMaterial&) {}
 
 	void CRenderer3D_Null::addTexturedMesh(uint32, uint32, const Mesh&, const Texture&, const PhongMaterial&) {}
+
+	void CRenderer3D_Null::addTexturedMesh(uint32, uint32, const Mesh&, const TextureRegion&, const PhongMaterial&) {}
 
 	void CRenderer3D_Null::addLine3D(const Float3&, const Float3&, const Float4(&)[2]) {}
 
@@ -70,7 +72,7 @@ namespace s3d
 
 	Rect CRenderer3D_Null::getScissorRect() const
 	{
-		return Rect{ 0 };
+		return Rect::Empty();
 	}
 
 	void CRenderer3D_Null::setViewport(const Optional<Rect>&) {}

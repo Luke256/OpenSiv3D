@@ -2,14 +2,15 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
 //-----------------------------------------------
 
 # include <Siv3D/TextInput.hpp>
+# include <Siv3D/Char.hpp>
 # include <Siv3D/Scene.hpp>
 # include <Siv3D/Indexed.hpp>
 # include <Siv3D/DrawableText.hpp>
@@ -203,21 +204,5 @@ namespace s3d
 			return SIV3D_ENGINE(TextInput)->getEditingTextStyle();
 		}
 	}
-
-# elif SIV3D_PLATFORM(WEB)
-
-	namespace Platform::Web::TextInput
-	{
-		void RequestEnableIME() 
-		{
-			Siv3DEngine::Get<ISiv3DTextInput>()->enableIME(true);
-		}
-
-		void RequestDisableIME() 
-		{
-			Siv3DEngine::Get<ISiv3DTextInput>()->enableIME(false);
-		}
-	}
-
 # endif
 }

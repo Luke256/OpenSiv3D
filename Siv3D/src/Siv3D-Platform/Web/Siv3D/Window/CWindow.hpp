@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -28,6 +28,7 @@ namespace s3d
 		String m_actualTitle = String(SIV3D_BUILD(DEBUG) ? U"Siv3D App (Debug Build)"_sv : Window::DefaultTitle);
 
 		WindowState m_state;
+		bool m_resizingWindow = false;
 		
 		void updateState();
 		
@@ -84,5 +85,7 @@ namespace s3d
 		void setToggleFullscreenEnabled(bool enabled) override;
 
 		bool isToggleFullscreenEnabled() const override;
+
+		void setTaskbarProgressBar(double progress0_1) override;
 	};
 }

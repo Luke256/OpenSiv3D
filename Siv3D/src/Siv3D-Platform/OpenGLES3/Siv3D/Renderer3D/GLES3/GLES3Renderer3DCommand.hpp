@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -97,6 +97,8 @@ namespace s3d
 		EyePosition,
 
 		LocalTransform,
+
+		UVTransform,
 
 		SetConstantBuffer,
 
@@ -215,7 +217,19 @@ namespace s3d
 		Array<Mat4x4> m_cameraTransforms			= { Mat4x4::Identity() };
 		Array<Float3> m_eyePositions				= { Float3{ 0.0f, 0.0f, 0.0f } };
 		Array<Mat4x4> m_localTransforms				= { Mat4x4::Identity() };
+		Array<Float4> m_uvTransforms				= { Float4{ 1.0f, 1.0f, 0.0f, 0.0f } };
+
+# ifdef __GNUC__
+#	pragma GCC diagnostic push
+#	pragma GCC diagnostic ignored "-Wignored-attributes"
+# endif
+
 		Array<__m128> m_constants;
+
+# ifdef __GNUC__
+#	pragma GCC diagnostic pop
+# endif
+
 		Array<GLES3ConstantBuffer3DCommand> m_constantBufferCommands;
 		std::array<Array<Texture::IDType>, SamplerState::MaxSamplerCount> m_vsTextures;
 		std::array<Array<Texture::IDType>, SamplerState::MaxSamplerCount> m_psTextures;
@@ -241,6 +255,7 @@ namespace s3d
 		Mat4x4 m_currentCameraTransform				= m_cameraTransforms.back();
 		Float3 m_currentEyePosition					= m_eyePositions.back();
 		Mat4x4 m_currentLocalTransform				= m_localTransforms.back();
+		Float4 m_currentUVTransform					= m_uvTransforms.back();
 		std::array<Texture::IDType, SamplerState::MaxSamplerCount> m_currentVSTextures;
 		std::array<Texture::IDType, SamplerState::MaxSamplerCount> m_currentPSTextures;
 		GLES3InputLayout3D m_currentInputLayout		= m_inputLayouts.back();
@@ -334,6 +349,10 @@ namespace s3d
 		void pushLocalTransform(const Mat4x4& state);
 		const Mat4x4& getCurrentLocalTransform() const;
 		const Mat4x4& getLocalTransform(uint32 index) const;
+
+		void pushUVTransform(const Float4& state);
+		const Float4& getCurrentUVTransform() const;
+		const Float4& getUVTransform(uint32 index) const;
 
 		void pushConstantBuffer(ShaderStage stage, uint32 slot, const ConstantBufferBase& buffer, const float* data, uint32 num_vectors);
 		GLES3ConstantBuffer3DCommand& getConstantBuffer(uint32 index);

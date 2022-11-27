@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -11,6 +11,7 @@
 
 # include <Siv3D/Cursor.hpp>
 # include <Siv3D/Window.hpp>
+# include <Siv3D/WindowState.hpp>
 # include <Siv3D/Cursor/ICursor.hpp>
 # include <Siv3D/Common/Siv3DEngine.hpp>
 
@@ -76,6 +77,11 @@ namespace s3d
 		Point ScreenDelta() noexcept
 		{
 			return SIV3D_ENGINE(Cursor)->getState().screen.delta;
+		}
+
+		void SetPos(const int32 x, const int32 y)
+		{
+			SetPos(Point{ x, y });
 		}
 
 		void SetPos(const Point pos)

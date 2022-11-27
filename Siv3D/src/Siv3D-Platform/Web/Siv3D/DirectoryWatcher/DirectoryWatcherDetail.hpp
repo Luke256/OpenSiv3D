@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -15,6 +15,7 @@
 # include <sys/inotify.h>
 # include <sys/select.h>
 # include <boost/bimap.hpp>
+# include <boost/container/allocator.hpp>
 
 # include <Siv3D/PseudoThread/PseudoThread.hpp>
 
@@ -56,7 +57,7 @@ namespace s3d
 
 		int m_fd = -1;
 
-		using bimap_t = boost::bimap<int, FilePath>;
+		using bimap_t = boost::bimap<int, FilePath, boost::container::allocator<int>>;
 		using bimap_value_t = bimap_t::value_type;
 		bimap_t m_watched_directories;
 

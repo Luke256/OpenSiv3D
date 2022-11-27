@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -59,13 +59,6 @@ namespace s3d
 		return (1 - t) * (1 - t) * (1 - t) * p0 + 3 * (1 - t) * (1 - t) * t * p1 + 3 * (1 - t) * t * t * p2 + t * t * t * p3;
 	}
 
-	inline Vec2 Bezier3::getTangent(const double t) const noexcept
-	{
-		return (-3 * p0 * (1 - t) * (1 - t) +
-			p1 * (3 * (1 - t) * (1 - t) - 6 * (1 - t) * t) +
-			p2 * (6 * (1 - t) * t - 3 * t * t) + 3 * p3 * t * t).normalized();
-	}
-
 	inline size_t Bezier3::hash() const noexcept
 	{
 		return Hash::FNV1a(*this);
@@ -95,16 +88,6 @@ namespace s3d
 
 	inline constexpr double Bezier3Path::getT() const noexcept
 	{
-		return m_t;
-	}
-
-	inline double Bezier3Path::advance(const double distance, const int32 quality) noexcept
-	{
-		for (int32 i = 0; i < quality; ++i)
-		{
-			m_t += (distance / quality) / (m_t * m_t * m_v0 + m_t * m_v1 + m_v2).length();
-		}
-
 		return m_t;
 	}
 }

@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -124,14 +124,14 @@ namespace s3d
 			}
 		}
 
-		std::future<String> GetText()
+		AsyncTask<String> GetText()
 		{
 			auto p = new std::promise<s3d::String>();
 			auto result_future = p->get_future();
 
 			s3d::detail::siv3dGetClipboardTextAsync(&detail::OnGetClipboardText, p);
 			
-			return result_future;
+			return std::move(result_future);
 		}
 	}
 }

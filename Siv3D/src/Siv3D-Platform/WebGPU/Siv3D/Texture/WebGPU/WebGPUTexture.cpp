@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -33,7 +33,7 @@ namespace s3d
 					.depthOrArrayLayers = 1
 				},
 				.format = ToEnum<wgpu::TextureFormat>(format.WGPUFormat()),
-				.usage = wgpu::TextureUsage::Sampled | wgpu::TextureUsage::CopyDst
+				.usage = wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::CopyDst
 			};
 
 			m_texture = device->CreateTexture(&desc);
@@ -78,7 +78,7 @@ namespace s3d
 					.depthOrArrayLayers = 1
 				},
 				.format = ToEnum<wgpu::TextureFormat>(format.WGPUFormat()),
-				.usage = wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::Sampled | wgpu::TextureUsage::CopyDst,
+				.usage = wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::CopyDst,
 				.mipLevelCount = 1 + mipmaps.size()
 			};
 
@@ -140,14 +140,28 @@ namespace s3d
 					.depthOrArrayLayers = 1
 				},
 				.format = ToEnum<wgpu::TextureFormat>(format.WGPUFormat()),
-				.usage = wgpu::TextureUsage::Sampled | wgpu::TextureUsage::CopyDst
+				.usage = wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::CopyDst
 			};
 
 			m_texture = device->CreateTexture(&desc);
 			m_textureView = m_texture.CreateView();
 		}
 
-		copyToTexture(device, size, 0, pData, size.x * format.pixelSize());
+		const auto minWidth = 256 / format.pixelSize();
+
+		if (size.x % minWidth == 0)
+		{
+			copyToTexture(device, size, 0, pData, size.x * format.pixelSize());
+		}
+		else
+		{
+			auto requiredWidth = static_cast<uint32>(((size.x * format.pixelSize() / 256) + 1) * 256 / sizeof(Color));
+			Array<Color> copiedData{ static_cast<const Color*>(pData), static_cast<const Color*>(pData) + size.x * size.y * format.pixelSize() / sizeof(Color) };
+			Grid<Color> copiedImage{ size, copiedData };
+			copiedImage.resize(requiredWidth, copiedImage.height());
+
+			copyToTexture(device, size, 0, copiedImage.data(), requiredWidth * sizeof(Color));
+		}
 
 		m_initialized = true;
 	}
@@ -175,7 +189,7 @@ namespace s3d
 					.depthOrArrayLayers = 1
 				},
 				.format = ToEnum<wgpu::TextureFormat>(format.WGPUFormat()),
-				.usage = wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::Sampled | wgpu::TextureUsage::CopyDst
+				.usage = wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::CopyDst
 			};
 
 			m_texture = device->CreateTexture(&desc);
@@ -218,7 +232,7 @@ namespace s3d
 					.depthOrArrayLayers = 1
 				},
 				.format = ToEnum<wgpu::TextureFormat>(format.WGPUFormat()),
-				.usage = wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::Sampled | wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::CopySrc
+				.usage = wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::CopySrc
 			};
 
 			m_texture = device->CreateTexture(&desc);
@@ -273,14 +287,25 @@ namespace s3d
 					.depthOrArrayLayers = 1
 				},
 				.format = ToEnum<wgpu::TextureFormat>(format.WGPUFormat()),
-				.usage = wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::Sampled | wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::CopySrc
+				.usage = wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::CopySrc
 			};
 
 			m_texture = device->CreateTexture(&desc);
 			m_textureView = m_texture.CreateView();
 		}
 
-		copyToTexture(device, image.size(), 0, image.data(), image.width() * sizeof(float));
+		if (image.width() % 64 == 0)
+		{
+			copyToTexture(device, image.size(), 0, image.data(), image.width() * sizeof(float));
+		}
+		else
+		{
+			auto requiredWidth = static_cast<uint32>(((image.width() / 64) + 1) * 64);
+			Grid<float> copiedImage{ image };
+			copiedImage.resize(requiredWidth, image.height());
+
+			copyToTexture(device, image.size(), 0, copiedImage.data(), copiedImage.width() * sizeof(float));
+		}
 
 		if (hasDepth)
 		{
@@ -316,14 +341,25 @@ namespace s3d
 					.depthOrArrayLayers = 1
 				},
 				.format = ToEnum<wgpu::TextureFormat>(format.WGPUFormat()),
-				.usage = wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::Sampled | wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::CopySrc
+				.usage = wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::CopySrc
 			};
 
 			m_texture = device->CreateTexture(&desc);
 			m_textureView = m_texture.CreateView();
 		}
 
-		copyToTexture(device, image.size(), 0, image.data(), image.width() * sizeof(Float2));
+		if (image.width() % 32 == 0)
+		{
+			copyToTexture(device, image.size(), 0, image.data(), image.width() * sizeof(Float2));
+		}
+		else
+		{
+			auto requiredWidth = static_cast<uint32>(((image.width() / 32) + 1) * 32);
+			Grid<Float2> copiedImage{ image };
+			copiedImage.resize(requiredWidth, image.height());
+
+			copyToTexture(device, image.size(), 0, copiedImage.data(), copiedImage.width() * sizeof(Float2));
+		}
 
 		if (hasDepth)
 		{
@@ -359,14 +395,25 @@ namespace s3d
 					.depthOrArrayLayers = 1
 				},
 				.format = ToEnum<wgpu::TextureFormat>(format.WGPUFormat()),
-				.usage = wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::Sampled | wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::CopySrc
+				.usage = wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::CopySrc
 			};
 
 			m_texture = device->CreateTexture(&desc);
 			m_textureView = m_texture.CreateView();
 		}
 
-		copyToTexture(device, image.size(), 0, image.data(), image.width() * sizeof(Float4));
+		if (image.width() % 16 == 0)
+		{
+			copyToTexture(device, image.size(), 0, image.data(), image.width() * sizeof(Float4));
+		}
+		else
+		{
+			auto requiredWidth = static_cast<uint32>(((image.width() / 16) + 1) * 16);
+			Grid<Float4> copiedImage{ image };
+			copiedImage.resize(requiredWidth, image.height());
+
+			copyToTexture(device, image.size(), 0, copiedImage.data(), copiedImage.width() * sizeof(Float4));
+		}
 
 		if (hasDepth)
 		{
@@ -402,7 +449,7 @@ namespace s3d
 					.depthOrArrayLayers = 1
 				},
 				.format = ToEnum<wgpu::TextureFormat>(format.WGPUFormat()),
-				.usage = wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::Sampled | wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::CopySrc,
+				.usage = wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::CopySrc,
 				.sampleCount = 4
 			};
 
@@ -420,7 +467,7 @@ namespace s3d
 					.depthOrArrayLayers = 1
 				},
 				.format = ToEnum<wgpu::TextureFormat>(format.WGPUFormat()),
-				.usage = wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::Sampled | wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::CopySrc
+				.usage = wgpu::TextureUsage::RenderAttachment | wgpu::TextureUsage::TextureBinding | wgpu::TextureUsage::CopyDst | wgpu::TextureUsage::CopySrc
 			};
 
 			m_texture = device->CreateTexture(&desc);
@@ -505,6 +552,7 @@ namespace s3d
 			return WebGPURenderTargetState
 			{
 				.hasDepth = m_hasDepth,
+				.hasAlpha = m_format.num_channels() == 4,
 				.renderTargetFormat = static_cast<uint8>(m_format.WGPUFormat()),
 				.sampleCount = 4
 			};
@@ -514,6 +562,7 @@ namespace s3d
 			return WebGPURenderTargetState
 			{
 				.hasDepth = m_hasDepth,
+				.hasAlpha = m_format.num_channels() == 4,
 				.renderTargetFormat = static_cast<uint8>(m_format.WGPUFormat()),
 				.sampleCount = 1
 			};
@@ -618,7 +667,23 @@ namespace s3d
 		if ((m_format == TextureFormat::R8G8B8A8_Unorm)
 			|| (m_format == TextureFormat::R8G8B8A8_Unorm_SRGB))
 		{
-			copyToTexture(device, m_size, 0, src, m_size.x * m_format.pixelSize());	
+			
+			const auto minWidth = 256 / m_format.pixelSize();
+
+			if (m_size.x % minWidth == 0)
+			{
+				copyToTexture(device, m_size, 0, src, m_size.x * m_format.pixelSize());
+			}
+			else
+			{
+				auto requiredWidth = static_cast<uint32>(((m_size.x * m_format.pixelSize() / 256) + 1) * 256 / sizeof(Color));
+				Array<Color> copiedData{ static_cast<const Color*>(src), static_cast<const Color*>(src) + m_size.x * m_size.y * m_format.pixelSize() / sizeof(Color) };
+				Grid<Color> copiedImage{ m_size, copiedData };
+				copiedImage.resize(requiredWidth, copiedImage.height());
+
+				copyToTexture(device, m_size, 0, copiedImage.data(), requiredWidth * sizeof(Color));
+			}
+
 			return true;
 		}
 		else
@@ -709,9 +774,9 @@ namespace s3d
 		{
 			wgpu::RenderPassColorAttachment colorAttachment
 			{
-				.loadOp = wgpu::LoadOp::Clear,
+				.loadOp = wgpu::LoadOp::Load,
 				.storeOp = wgpu::StoreOp::Store,
-				.clearColor =
+				.clearValue =
 				{
 					.r = color.r,
 					.g = color.g,
@@ -740,16 +805,16 @@ namespace s3d
 				wgpu::RenderPassDepthStencilAttachment depthAttachment
 				{
 					.view = m_depthTextureView,
-					.clearDepth = 0.0f
+					.depthClearValue = 0.0f
 				};
 
 				descripter.depthStencilAttachment = &depthAttachment;
 
-				encoder.BeginRenderPass(&descripter).EndPass();
+				encoder.BeginRenderPass(&descripter).End();
 			}
 			else
 			{
-				encoder.BeginRenderPass(&descripter).EndPass();
+				encoder.BeginRenderPass(&descripter).End();
 			}
 		}
 

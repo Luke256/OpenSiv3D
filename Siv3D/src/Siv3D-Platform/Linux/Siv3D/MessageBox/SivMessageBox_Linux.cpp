@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -12,6 +12,7 @@
 # include <Siv3D/MessageBox.hpp>
 # include <Siv3D/AsyncTask.hpp>
 # include <Siv3D/Monitor.hpp>
+# include <Siv3D/MonitorInfo.hpp>
 # include <Siv3D/Scene.hpp>
 # include <Siv3D/Error.hpp>
 

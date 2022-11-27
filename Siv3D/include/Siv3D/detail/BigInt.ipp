@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -301,21 +301,6 @@ namespace s3d
 	inline int32 BigInt::compare(const Float f) const
 	{
 		return compare(static_cast<long double>(f));
-	}
-
-	inline BigInt::operator size_t() const
-	{
-		return asSize_t();
-	}
-
-	inline BigInt::operator float() const
-	{
-		return asFloat();
-	}
-
-	inline BigInt::operator double() const
-	{
-		return asDouble();
 	}
 }
 

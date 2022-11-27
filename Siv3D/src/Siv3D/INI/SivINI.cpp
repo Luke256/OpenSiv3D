@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -39,6 +39,18 @@ namespace s3d
 		}
 	}
 
+	INI::INI() {}
+
+	INI::INI(const FilePathView path, const Optional<TextEncoding>& encoding)
+	{
+		load(path, encoding);
+	}
+
+	INI::INI(std::unique_ptr<IReader>&& reader, const Optional<TextEncoding>& encoding)
+	{
+		load(std::move(reader), encoding);
+	}
+
 	bool INI::load(const FilePathView path, const Optional<TextEncoding>& encoding)
 	{
 		TextReader textReader(path, encoding);
@@ -51,6 +63,13 @@ namespace s3d
 		}
 
 		return true;
+	}
+
+	void INI::clear()
+	{
+		m_sections.clear();
+
+		m_keyIndices.clear();
 	}
 
 	bool INI::load(std::unique_ptr<IReader>&& reader, const Optional<TextEncoding>& encoding)

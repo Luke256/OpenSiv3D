@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -393,6 +393,84 @@ namespace s3d
 		}
 	}
 
+	void Image::fill(const Color color) noexcept
+	{
+		std::fill(m_data.begin(), m_data.end(), color);
+	}
+
+	void Image::resize(const size_t width, const size_t height)
+	{
+		resize(Size(width, height));
+	}
+
+	void Image::resize(const Size size)
+	{
+		if (not detail::IsValidImageSize(size))
+		{
+			return clear();
+		}
+
+		if (size == Size(m_width, m_height))
+		{
+			return;
+		}
+
+		m_data.resize(size.x * size.y);
+		m_width = static_cast<uint32>(size.x);
+		m_height = static_cast<uint32>(size.y);
+	}
+
+	void Image::resize(const size_t width, const size_t height, const Color fillColor)
+	{
+		resize(Size(width, height), fillColor);
+	}
+
+	void Image::resize(const Size size, const Color fillColor)
+	{
+		if (not detail::IsValidImageSize(size))
+		{
+			return clear();
+		}
+
+		if (size == Size(m_width, m_height))
+		{
+			return;
+		}
+
+		m_data.assign(size.x * size.y, fillColor);
+		m_width = static_cast<uint32>(size.x);
+		m_height = static_cast<uint32>(size.y);
+	}
+
+	void Image::resizeRows(const size_t rows, const Color fillColor)
+	{
+		if (rows == m_height)
+		{
+			return;
+		}
+
+		if (not detail::IsValidImageSize(Size(m_width, rows)))
+		{
+			return clear();
+		}
+
+		if (rows < m_height)
+		{
+			m_data.resize(m_width * rows);
+		}
+		else
+		{
+			m_data.insert(m_data.end(), m_width * (rows - m_height), fillColor);
+		}
+
+		m_height = static_cast<uint32>(rows);
+	}
+
+	Color Image::getPixel(const int32 x, const int32 y, const ImageAddressMode addressMode) const
+	{
+		return getPixel(Size{ x, y }, addressMode);
+	}
+
 	Color Image::getPixel(const Point pos, const ImageAddressMode addressMode) const
 	{
 		switch (addressMode)
@@ -421,6 +499,11 @@ namespace s3d
 				}
 			}
 		}
+	}
+
+	ColorF Image::samplePixel(const double x, const double y, const ImageAddressMode addressMode) const
+	{
+		return samplePixel(Vec2{ x, y }, addressMode);
 	}
 
 	ColorF Image::samplePixel(const Vec2 pos, const ImageAddressMode addressMode) const
@@ -1662,7 +1745,7 @@ namespace s3d
 
 		// 2. 処理
 		{
-			cv::Mat_<cv::Vec4b> matSrc = OpenCV_Bridge::GetMatView(*this);
+			cv::Mat matSrc = OpenCV_Bridge::GetMatView(*this);
 			cv::blur(matSrc, matSrc, cv::Size(horizontal * 2 + 1, vertical * 2 + 1), cv::Point(-1, -1), OpenCV_Bridge::ConvertBorderType(borderType));
 		}
 
@@ -1692,8 +1775,8 @@ namespace s3d
 		// 2. 処理
 		{
 			Image image{ m_width, m_height };
-			const cv::Mat_<cv::Vec4b> matSrc(m_height, m_width, const_cast<cv::Vec4b*>(static_cast<const cv::Vec4b*>(static_cast<const void*>(data()))), stride());
-			cv::Mat_<cv::Vec4b> matDst = OpenCV_Bridge::GetMatView(image);
+			const cv::Mat matSrc(cv::Size(m_width, m_height), CV_8UC4, const_cast<uint8*>(dataAsUint8()), stride());
+			cv::Mat matDst = OpenCV_Bridge::GetMatView(image);
 
 			cv::blur(matSrc, matDst, cv::Size(horizontal * 2 + 1, vertical * 2 + 1), cv::Point(-1, -1), OpenCV_Bridge::ConvertBorderType(borderType));
 			return image;
@@ -1722,7 +1805,7 @@ namespace s3d
 
 		// 2. 処理
 		{
-			cv::Mat_<cv::Vec4b> matSrc = OpenCV_Bridge::GetMatView(*this);
+			cv::Mat matSrc = OpenCV_Bridge::GetMatView(*this);
 			cv::medianBlur(matSrc, matSrc, apertureSize);
 		}
 
@@ -1752,8 +1835,8 @@ namespace s3d
 		// 2. 処理
 		{
 			Image image{ m_width, m_height };
-			const cv::Mat_<cv::Vec4b> matSrc(m_height, m_width, const_cast<cv::Vec4b*>(static_cast<const cv::Vec4b*>(static_cast<const void*>(data()))), stride());
-			cv::Mat_<cv::Vec4b> matDst = OpenCV_Bridge::GetMatView(image);
+			const cv::Mat matSrc(cv::Size(m_width, m_height), CV_8UC4, const_cast<uint8*>(dataAsUint8()), stride());
+			cv::Mat matDst = OpenCV_Bridge::GetMatView(image);
 
 			cv::medianBlur(matSrc, matDst, apertureSize);
 			return image;
@@ -1782,7 +1865,7 @@ namespace s3d
 
 		// 2. 処理
 		{
-			cv::Mat_<cv::Vec4b> matSrc = OpenCV_Bridge::GetMatView(*this);
+			cv::Mat matSrc = OpenCV_Bridge::GetMatView(*this);
 			cv::GaussianBlur(matSrc, matSrc, cv::Size(horizontal * 2 + 1, vertical * 2 + 1), 0.0, 0.0, OpenCV_Bridge::ConvertBorderType(borderType));
 		}
 
@@ -1812,8 +1895,8 @@ namespace s3d
 		// 2. 処理
 		{
 			Image image{ m_width, m_height };
-			const cv::Mat_<cv::Vec4b> matSrc(m_height, m_width, const_cast<cv::Vec4b*>(static_cast<const cv::Vec4b*>(static_cast<const void*>(data()))), stride());
-			cv::Mat_<cv::Vec4b> matDst = OpenCV_Bridge::GetMatView(image);
+			const cv::Mat matSrc(cv::Size(m_width, m_height), CV_8UC4, const_cast<uint8*>(dataAsUint8()), stride());
+			cv::Mat matDst = OpenCV_Bridge::GetMatView(image);
 
 			cv::GaussianBlur(matSrc, matDst, cv::Size(horizontal * 2 + 1, vertical * 2 + 1), 0.0, 0.0, OpenCV_Bridge::ConvertBorderType(borderType));
 			return image;
@@ -1880,7 +1963,7 @@ namespace s3d
 
 		// 2. 処理
 		{
-			cv::Mat_<cv::Vec4b> matSrc = OpenCV_Bridge::GetMatView(*this);
+			cv::Mat matSrc = OpenCV_Bridge::GetMatView(*this);
 			cv::dilate(matSrc, matSrc, cv::Mat(), cv::Point(-1, -1), iterations);
 		}
 
@@ -1905,8 +1988,8 @@ namespace s3d
 		// 2. 処理
 		{
 			Image image{ m_width, m_height };
-			const cv::Mat_<cv::Vec4b> matSrc(m_height, m_width, const_cast<cv::Vec4b*>(static_cast<const cv::Vec4b*>(static_cast<const void*>(data()))), stride());
-			cv::Mat_<cv::Vec4b> matDst = OpenCV_Bridge::GetMatView(image);
+			const cv::Mat matSrc(cv::Size(m_width, m_height), CV_8UC4, const_cast<uint8*>(dataAsUint8()), stride());
+			cv::Mat matDst = OpenCV_Bridge::GetMatView(image);
 
 			cv::dilate(matSrc, matDst, cv::Mat(), cv::Point(-1, -1), iterations);
 			return image;
@@ -1930,7 +2013,7 @@ namespace s3d
 
 		// 2. 処理
 		{
-			cv::Mat_<cv::Vec4b> matSrc = OpenCV_Bridge::GetMatView(*this);
+			cv::Mat matSrc = OpenCV_Bridge::GetMatView(*this);
 			cv::erode(matSrc, matSrc, cv::Mat(), cv::Point(-1, -1), iterations);
 		}
 
@@ -1955,8 +2038,8 @@ namespace s3d
 		// 2. 処理
 		{
 			Image image{ m_width, m_height };
-			const cv::Mat_<cv::Vec4b> matSrc(m_height, m_width, const_cast<cv::Vec4b*>(static_cast<const cv::Vec4b*>(static_cast<const void*>(data()))), stride());
-			cv::Mat_<cv::Vec4b> matDst = OpenCV_Bridge::GetMatView(image);
+			const cv::Mat matSrc(cv::Size(m_width, m_height), CV_8UC4, const_cast<uint8*>(dataAsUint8()), stride());
+			cv::Mat matDst = OpenCV_Bridge::GetMatView(image);
 
 			cv::erode(matSrc, matDst, cv::Mat(), cv::Point(-1, -1), iterations);
 			return image;
@@ -2076,8 +2159,8 @@ namespace s3d
 			}
 
 			Image tmp(targetWidth, targetHeight);
-			const cv::Mat_<cv::Vec4b> matSrc = OpenCV_Bridge::GetMatView(*this);
-			cv::Mat_<cv::Vec4b> matDst = OpenCV_Bridge::GetMatView(tmp);
+			const cv::Mat matSrc = OpenCV_Bridge::GetMatView(*this);
+			cv::Mat matDst = OpenCV_Bridge::GetMatView(tmp);
 			
 			cv::resize(matSrc, matDst, matDst.size(), 0, 0, static_cast<int32>(interpolation));
 			swap(tmp);
@@ -2127,8 +2210,8 @@ namespace s3d
 			}
 
 			Image image(targetWidth, targetHeight);
-			const cv::Mat_<cv::Vec4b> matSrc(m_height, m_width, const_cast<cv::Vec4b*>(static_cast<const cv::Vec4b*>(static_cast<const void*>(data()))), stride());
-			cv::Mat_<cv::Vec4b> matDst = OpenCV_Bridge::GetMatView(image);
+			const cv::Mat matSrc(cv::Size(m_width, m_height), CV_8UC4, const_cast<uint8*>(dataAsUint8()), stride());
+			cv::Mat matDst = OpenCV_Bridge::GetMatView(image);
 
 			cv::resize(matSrc, matDst, matDst.size(), 0, 0, static_cast<int32>(interpolation));
 			return image;
@@ -2335,7 +2418,7 @@ namespace s3d
 		const Size dstSize = Math::Ceil(boundingRect.size).asPoint();
 
 		const cv::Matx23f transform{ m._11, m._21, m._31, m._12, m._22, m._32 };
-		const cv::Mat_<cv::Vec4b> matSrc(m_height, m_width, const_cast<cv::Vec4b*>(static_cast<const cv::Vec4b*>(static_cast<const void*>(data()))), stride());
+		const cv::Mat matSrc(cv::Size(m_width, m_height), CV_8UC4, const_cast<uint8*>(dataAsUint8()), stride());
 		cv::Mat_<cv::Vec4b> matDst;
 
 		const ColorF bg{ background };
@@ -2378,7 +2461,7 @@ namespace s3d
 		};
 
 		const cv::Mat transform = cv::getPerspectiveTransform(from, to);
-		const cv::Mat_<cv::Vec4b> matSrc(m_height, m_width, const_cast<cv::Vec4b*>(static_cast<const cv::Vec4b*>(static_cast<const void*>(data()))), stride());
+		const cv::Mat matSrc(cv::Size(m_width, m_height), CV_8UC4, const_cast<uint8*>(dataAsUint8()), stride());
 		cv::Mat_<cv::Vec4b> matDst;
 
 		const ColorF bg{ background };

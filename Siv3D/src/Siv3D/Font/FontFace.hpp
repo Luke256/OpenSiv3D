@@ -2,18 +2,20 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
 //-----------------------------------------------
 
 # pragma once
+# include <array>
 # include <Siv3D/Common.hpp>
 # include <Siv3D/String.hpp>
 # include <Siv3D/FontStyle.hpp>
 # include <Siv3D/FontMethod.hpp>
+# include <Siv3D/PredefinedYesNo.hpp>
 # include "FontFaceProperty.hpp"
 
 # if SIV3D_PLATFORM(WINDOWS) | SIV3D_PLATFORM(MACOS) | SIV3D_PLATFORM(WEB)
@@ -54,7 +56,7 @@ namespace s3d
 		const FontFaceProperty& getProperty() const noexcept;
 
 		[[nodiscard]]
-		HBGlyphInfo getHBGlyphInfo(StringView s) const;
+		HBGlyphInfo getHBGlyphInfo(StringView s, Ligature ligature) const;
 
 	private:
 
@@ -67,6 +69,8 @@ namespace s3d
 		hb_font_t* m_hbFont = nullptr;
 
 		hb_buffer_t* m_hbBuffer = nullptr;
+
+		std::array<hb_feature_t, 4> m_noLigatureFeatures;
 
 		FontFaceProperty m_property;
 	};

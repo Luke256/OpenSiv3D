@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -55,8 +55,8 @@ namespace s3d
 		{
 			LOG_INFO(U"📦 Loading vertex shaders for CRenderer3D_WebGPU:");
 			m_standardVS = std::make_unique<WebGPUStandardVS3D>();
-			m_standardVS->forward = WGSL{ Resource(U"engine/shader/wgsl/forward3d.vert.wgsl"), { { U"VSPerView", 1 }, { U"VSPerObject", 2 } } };
-			m_standardVS->line3D = WGSL{ Resource(U"engine/shader/wgsl/line3d.vert.wgsl"), { { U"VSPerView", 1 }, { U"VSPerObject", 2 } } };
+			m_standardVS->forward = WGSL{ Resource(U"engine/shader/wgsl/forward3d.vert.wgsl"), { { U"VSPerView", 0 }, { U"VSPerObject", 1 }, { U"VSPerMaterial", 2 } } };
+			m_standardVS->line3D = WGSL{ Resource(U"engine/shader/wgsl/line3d.vert.wgsl"), { { U"VSPerView", 0 }, { U"VSPerObject", 1 } } };
 
 			if (not m_standardVS->setup())
 			{
@@ -68,7 +68,7 @@ namespace s3d
 		{
 			LOG_INFO(U"📦 Loading pixel shaders for CRenderer3D_WebGPU:");
 			m_standardPS = std::make_unique<WebGPUStandardPS3D>();
-			m_standardPS->forward = WGSL{ Resource(U"engine/shader/wgsl/forward3d.frag.wgsl"), { { U"PSPerFrame", 0 }, { U"PSPerView", 1 }, { U"PSPerMaterial", 3 } } };
+			m_standardPS->forward = WGSL{ Resource(U"engine/shader/wgsl/forward3d.frag.wgsl"), { { U"PSPerFrame", 0 }, { U"PSPerView", 1 }, { U"PSPerMaterial", 2 } } };
 			m_standardPS->line3D = WGSL{ Resource(U"engine/shader/wgsl/line3d.frag.wgsl"), {} };
 
 			if (not m_standardPS->setup())
@@ -107,6 +107,7 @@ namespace s3d
 
 		m_commandManager.pushInputLayout(WebGPUInputLayout3D::Mesh);
 		m_commandManager.pushMesh(mesh);
+		m_commandManager.pushUVTransform(Float4{ 1.0f, 1.0f, 0.0f, 0.0f });
 
 		const PhongMaterialInternal phong{ material };
 		const uint32 instanceCount = 1;
@@ -127,7 +128,36 @@ namespace s3d
 
 		m_commandManager.pushInputLayout(WebGPUInputLayout3D::Mesh);
 		m_commandManager.pushMesh(mesh);
+		m_commandManager.pushUVTransform(Float4{ 1.0f, 1.0f, 0.0f, 0.0f });
 		m_commandManager.pushPSTexture(0, texture);
+
+		const PhongMaterialInternal phong{ material };
+		const uint32 instanceCount = 1;
+		m_commandManager.pushDraw(startIndex, indexCount, phong, instanceCount);
+	}
+
+	void CRenderer3D_WebGPU::addTexturedMesh(const uint32 startIndex, const uint32 indexCount, const Mesh& mesh, const TextureRegion& textureRegion, const PhongMaterial& material)
+	{
+		if (not m_currentCustomVS)
+		{
+			m_commandManager.pushStandardVS(m_standardVS->forwardID);
+		}
+
+		if (not m_currentCustomPS)
+		{
+			m_commandManager.pushStandardPS(m_standardPS->forwardID);
+		}
+
+		m_commandManager.pushInputLayout(WebGPUInputLayout3D::Mesh);
+		m_commandManager.pushMesh(mesh);
+
+		Float4 uvTransform;
+		uvTransform.x = (textureRegion.uvRect.right - textureRegion.uvRect.left);
+		uvTransform.y = (textureRegion.uvRect.bottom - textureRegion.uvRect.top);
+		uvTransform.z = textureRegion.uvRect.left;
+		uvTransform.w = textureRegion.uvRect.top;
+		m_commandManager.pushUVTransform(uvTransform);
+		m_commandManager.pushPSTexture(0, textureRegion.texture);
 
 		const PhongMaterialInternal phong{ material };
 		const uint32 instanceCount = 1;
@@ -438,7 +468,7 @@ namespace s3d
 		auto currentRenderTargetState = pRenderer->getBackBuffer().getRenderTargetState();
 
 		Size currentRenderTargetSize = SIV3D_ENGINE(Renderer)->getSceneBufferSize();
-		currentRenderingPass.SetViewport(0.0f, 0.0f, currentRenderTargetSize.x, currentRenderTargetSize.y, 0.0f, 1.0f);
+		Rect currentViewportRect{ 0, 0, currentRenderTargetSize.x, currentRenderTargetSize.y };
 
 		LOG_COMMAND(U"----");
 		uint32 instanceIndex = 0;
@@ -467,15 +497,17 @@ namespace s3d
 
 					m_vsPerViewConstants._update_if_dirty();
 					m_vsPerObjectConstants._update_if_dirty();
+					m_vsPerMaterialConstants._update_if_dirty();
 					m_psPerFrameConstants._update_if_dirty();
 					m_psPerViewConstants._update_if_dirty();
 					m_psPerMaterialConstants._update_if_dirty();
 
-					pShader->setConstantBufferVS(1, m_vsPerViewConstants.base());
-					pShader->setConstantBufferVS(2, m_vsPerObjectConstants.base());
+					pShader->setConstantBufferVS(0, m_vsPerViewConstants.base());
+					pShader->setConstantBufferVS(1, m_vsPerObjectConstants.base());
+					pShader->setConstantBufferVS(2, m_vsPerMaterialConstants.base());
 					pShader->setConstantBufferPS(0, m_psPerFrameConstants.base());
 					pShader->setConstantBufferPS(1, m_psPerViewConstants.base());
-					pShader->setConstantBufferPS(3, m_psPerMaterialConstants.base());
+					pShader->setConstantBufferPS(2, m_psPerMaterialConstants.base());
 
 					auto pipeline = pShader->usePipelineWithStandard3DVertexLayout(currentRenderingPass, currentRasterizerState, currentBlendState, currentRenderTargetState, currentDepthStencilState);
 					pRenderer->getSamplerState().bind(m_device, pipeline, currentRenderingPass);
@@ -511,11 +543,11 @@ namespace s3d
 					m_psPerViewConstants._update_if_dirty();
 					m_psPerMaterialConstants._update_if_dirty();
 
-					pShader->setConstantBufferVS(1, m_vsPerViewConstants.base());
-					pShader->setConstantBufferVS(2, m_vsPerObjectConstants.base());
+					pShader->setConstantBufferVS(0, m_vsPerViewConstants.base());
+					pShader->setConstantBufferVS(1, m_vsPerObjectConstants.base());
 					pShader->setConstantBufferPS(0, m_psPerFrameConstants.base());
 					pShader->setConstantBufferPS(1, m_psPerViewConstants.base());
-					pShader->setConstantBufferPS(3, m_psPerMaterialConstants.base());
+					pShader->setConstantBufferPS(2, m_psPerMaterialConstants.base());
 
 					auto pipeline = pShader->usePipelineWithStandard3DLineVertexLayout(currentRenderingPass, currentRasterizerState, currentBlendState, currentRenderTargetState, currentDepthStencilState);
 					pRenderer->getSamplerState().bind(m_device, pipeline, currentRenderingPass);
@@ -627,6 +659,7 @@ namespace s3d
 					rect.w = Min(rect.w, currentRenderTargetSize.x);
 					rect.h = Min(rect.h, currentRenderTargetSize.y);
 
+					currentViewportRect = rect;
 					currentRenderingPass.SetViewport(rect.x, rect.y, rect.w, rect.h, 0.0f, 1.0f);
 
 					LOG_COMMAND(U"Viewport[{}] (x = {}, y = {}, w = {}, h = {})"_fmt(command.index,
@@ -637,7 +670,7 @@ namespace s3d
 				{
 					const auto& rt = m_commandManager.getRT(command.index);
 					
-					currentRenderingPass.EndPass();
+					currentRenderingPass.End();
 					
 					if (rt) // [カスタム RenderTexture]
 					{
@@ -655,6 +688,13 @@ namespace s3d
 
 						LOG_COMMAND(U"SetRT[{}] (default scene)"_fmt(command.index));
 					}
+
+					Rect rect{ currentViewportRect };
+
+					rect.w = Min(rect.w, currentRenderTargetSize.x);
+					rect.h = Min(rect.h, currentRenderTargetSize.y);
+
+					currentRenderingPass.SetViewport(rect.x, rect.y, rect.w, rect.h, 0.0f, 1.0f);
 					break;
 				}
 			case WebGPURenderer3DCommandType::InputLayout:
@@ -726,6 +766,14 @@ namespace s3d
 					m_vsPerObjectConstants->localToWorld = localTransform.transposed();
 
 					LOG_COMMAND(U"LocalTransform[{}] {}"_fmt(command.index, localTransform));
+					break;
+				}
+			case WebGPURenderer3DCommandType::UVTransform:
+				{
+					const Float4& uvTransform = m_commandManager.getUVTransform(command.index);
+					m_vsPerMaterialConstants->uvTransform = uvTransform;
+
+					LOG_COMMAND(U"UVTransform[{}] {}"_fmt(command.index, uvTransform));
 					break;
 				}
 			case WebGPURenderer3DCommandType::SetConstantBuffer:
@@ -845,6 +893,6 @@ namespace s3d
 			}
 		}
 
-		currentRenderingPass.EndPass();
+		currentRenderingPass.End();
 	}
 }

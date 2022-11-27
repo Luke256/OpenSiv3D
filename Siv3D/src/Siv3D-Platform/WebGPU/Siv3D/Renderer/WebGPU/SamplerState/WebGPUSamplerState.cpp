@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -156,7 +156,8 @@ namespace s3d
 		{
 			Array<wgpu::BindGroupEntry> vsBindings{};
 
-			for (uint32 i = 0; i < SamplerState::MaxSamplerCount; i++)
+			// for (uint32 i = 0; i < SamplerState::MaxSamplerCount; i++)
+			for (uint32 i = 0; i < 2; i++)
 			{
 				const auto& state = m_currentVSStates[i];
 				const auto texture = m_currentVSTextures[i];
@@ -198,7 +199,7 @@ namespace s3d
 		{
 			Array<wgpu::BindGroupEntry> psBindings{};
 
-			for (uint32 i = 0; i < SamplerState::MaxSamplerCount; i++)
+			for (uint32 i = 0; i < 4; i++)
 			{
 				const auto& state = m_currentPSStates[i];
 				const auto texture = m_currentPSTextures[i];

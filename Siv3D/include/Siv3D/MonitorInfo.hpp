@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -32,10 +32,10 @@ namespace s3d
 		String displayDeviceName;
 
 		/// @brief ディスプレイ全体の位置とサイズ
-		Rect displayRect = Rect{ 0 };
+		Rect displayRect = Rect::Empty();
 
 		/// @brief タスクバーなどを除いた利用可能な領域の位置とサイズ
-		Rect workArea = Rect{ 0 };
+		Rect workArea = Rect::Empty();
 
 		/// @brief フルスクリーン時の解像度
 		Size fullscreenResolution = Size{ 0, 0 };

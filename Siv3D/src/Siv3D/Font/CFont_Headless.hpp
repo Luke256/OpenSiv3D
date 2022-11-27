@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -12,6 +12,7 @@
 # pragma once
 # include <Siv3D/Common.hpp>
 # include <Siv3D/Font.hpp>
+# include <Siv3D/PixelShader.hpp>
 # include <Siv3D/AssetHandleManager/AssetHandleManager.hpp>
 # include "IFont.hpp"
 # include "FontData.hpp"
@@ -54,7 +55,7 @@ namespace s3d
 
 		GlyphIndex getGlyphIndex(Font::IDType handleID, StringView ch) override;
 
-		Array<GlyphCluster> getGlyphClusters(Font::IDType handleID, StringView s, bool recursive) override;
+		Array<GlyphCluster> getGlyphClusters(Font::IDType handleID, StringView s, bool recursive, Ligature ligature) override;
 
 		GlyphInfo getGlyphInfo(Font::IDType handleID, StringView ch) override;
 
@@ -64,13 +65,13 @@ namespace s3d
 
 		OutlineGlyph renderOutlineByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex, CloseRing closeRing) override;
 
-		Array<OutlineGlyph> renderOutlines(Font::IDType handleID, StringView s, CloseRing closeRing) override;
+		Array<OutlineGlyph> renderOutlines(Font::IDType handleID, StringView s, CloseRing closeRing, Ligature ligature) override;
 
 		PolygonGlyph renderPolygon(Font::IDType handleID, StringView ch) override;
 
 		PolygonGlyph renderPolygonByGlyphIndex(Font::IDType handleID, GlyphIndex glyphIndex) override;
 
-		Array<PolygonGlyph> renderPolygons(Font::IDType handleID, StringView s) override;
+		Array<PolygonGlyph> renderPolygons(Font::IDType handleID, StringView s, Ligature ligature) override;
 
 		BitmapGlyph renderBitmap(Font::IDType handleID, StringView s) override;
 
@@ -90,7 +91,7 @@ namespace s3d
 
 		Glyph getGlyph(Font::IDType handleID, StringView ch) override;
 
-		Array<Glyph> getGlyphs(Font::IDType handleID, StringView s) override;
+		Array<Glyph> getGlyphs(Font::IDType handleID, StringView s, Ligature ligature) override;
 
 		Array<double> getXAdvances(Font::IDType handleID, StringView s, const Array<GlyphCluster>& clusters, double fontSize) override;
 

@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -86,7 +86,7 @@ namespace s3d
 
 	void MetalRenderPipeline2DManager::add(const VertexShader::IDType vsID, const PixelShader::IDType psID, const MTLPixelFormat pixelFormat, const uint32 sampleCount, const BlendState& blendState)
 	{
-		const KeyType key{ vsID, psID, pixelFormat, sampleCount };
+		const KeyType key{ vsID, psID, pixelFormat, sampleCount, blendState };
 
 		if (m_pipelineStates.contains(key))
 		{
@@ -117,14 +117,14 @@ namespace s3d
 		assert(renderPipelineState);
 		
 		LOG_TRACE(U"new MTLRenderPipelineState created (vsID = {}, psID = {}, pixelFormat = {}, sampleCount = {}, blendState = {})"_fmt
-				  (vsID.value(), psID.value(), pixelFormat, sampleCount, blendState.asValue()));
+				  (vsID.value(), psID.value(), FromEnum(pixelFormat), sampleCount, blendState.asValue()));
 		
 		m_pipelineStates.emplace(key, renderPipelineState);
 	}
 
 	id<MTLRenderPipelineState> MetalRenderPipeline2DManager::get(const VertexShader::IDType vsID, const PixelShader::IDType psID, const MTLPixelFormat pixelFormat, const uint32 sampleCount, const BlendState& blendState)
 	{
-		const KeyType key{ vsID, psID, pixelFormat, sampleCount };
+		const KeyType key{ vsID, psID, pixelFormat, sampleCount, blendState };
 		
 		auto it = m_pipelineStates.find(key);
 		
@@ -157,7 +157,7 @@ namespace s3d
 		assert(renderPipelineState);
 		
 		LOG_TRACE(U"new MTLRenderPipelineState created (vsID = {}, psID = {}, pixelFormat = {}, sampleCount = {}, blendState = {})"_fmt
-				  (vsID.value(), psID.value(), pixelFormat, sampleCount, blendState.asValue()));
+				  (vsID.value(), psID.value(), FromEnum(pixelFormat), sampleCount, blendState.asValue()));
 		
 		return m_pipelineStates.emplace(key, renderPipelineState).first->second;
 	}

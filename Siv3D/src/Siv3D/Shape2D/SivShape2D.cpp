@@ -2,8 +2,8 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
@@ -343,17 +343,35 @@ namespace s3d
 		{
 			TriangleIndex* pDst = indices.data();
 
-			for (Vertex2D::IndexType i = 0; i < steps; ++i)
+			if (upStairs)
 			{
-				pDst->i0 = 0;
-				pDst->i1 = 2 * i + 1;
-				pDst->i2 = 2 * i + 2;
-				++pDst;
+				for (Vertex2D::IndexType i = 0; i < steps; ++i)
+				{
+					pDst->i0 = 0;
+					pDst->i1 = 2 * i + 1;
+					pDst->i2 = 2 * i + 2;
+					++pDst;
 
-				pDst->i0 = 0;
-				pDst->i1 = 2 * i + 2;
-				pDst->i2 = 2 * i + 3;
-				++pDst;
+					pDst->i0 = 0;
+					pDst->i1 = 2 * i + 2;
+					pDst->i2 = 2 * i + 3;
+					++pDst;
+				}
+			}
+			else
+			{
+				for (Vertex2D::IndexType i = 0; i < steps; ++i)
+				{
+					pDst->i0 = 0;
+					pDst->i1 = 2 * i + 2;
+					pDst->i2 = 2 * i + 1;
+					++pDst;
+
+					pDst->i0 = 0;
+					pDst->i1 = 2 * i + 3;
+					pDst->i2 = 2 * i + 2;
+					++pDst;
+				}
 			}
 		}
 
@@ -365,7 +383,7 @@ namespace s3d
 		//-----------------------------------------------
 		//	Authors (OpenSiv3D challenge #03 participants)
 		//	- 野菜ジュース
-		//	- てゃいの
+		//	- sthairno
 		//-----------------------------------------------
 
 		if (r <= 0.0)

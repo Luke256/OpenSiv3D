@@ -2,14 +2,15 @@
 //
 //	This file is part of the Siv3D Engine.
 //
-//	Copyright (c) 2008-2021 Ryo Suzuki
-//	Copyright (c) 2016-2021 OpenSiv3D Project
+//	Copyright (c) 2008-2022 Ryo Suzuki
+//	Copyright (c) 2016-2022 OpenSiv3D Project
 //
 //	Licensed under the MIT License.
 //
 //-----------------------------------------------
 
 # include <Siv3D/Monitor.hpp>
+# include <Siv3D/MonitorInfo.hpp>
 # include <Siv3D/Unicode.hpp>
 # include <Siv3D/Window/IWindow.hpp>
 # include <Siv3D/Common/Siv3DEngine.hpp>
@@ -79,11 +80,21 @@ namespace s3d
 			return true;
 		}
 
-		static MonitorInfo MakeMonitorInfo(const DISPLAY_DEVICEW& displayDevice, const DISPLAY_DEVICEW& monitor)
+		static MonitorInfo MakeMonitorInfo(const DISPLAY_DEVICEW& displayDevice, const DISPLAY_DEVICEW* monitor)
 		{
 			MonitorInfo monitorInfo;
-			monitorInfo.name				= Unicode::FromWstring(monitor.DeviceString);
-			monitorInfo.id					= Unicode::FromWstring(monitor.DeviceID);
+
+			if (monitor)
+			{
+				monitorInfo.name = Unicode::FromWstring(monitor->DeviceString);
+				monitorInfo.id = Unicode::FromWstring(monitor->DeviceID);
+			}
+			else
+			{
+				monitorInfo.name = Unicode::FromWstring(displayDevice.DeviceString);
+				monitorInfo.id = Unicode::FromWstring(displayDevice.DeviceID);
+			}
+
 			monitorInfo.displayDeviceName	= Unicode::FromWstring(displayDevice.DeviceName);
 			monitorInfo.isPrimary			= !!(displayDevice.StateFlags & DISPLAY_DEVICE_PRIMARY_DEVICE);
 
@@ -217,7 +228,7 @@ namespace s3d
 							not(monitor.StateFlags & DISPLAY_DEVICE_MIRRORING_DRIVER))
 						{
 							
-							monitors.push_back(detail::MakeMonitorInfo(displayDevice, monitor));
+							monitors.push_back(detail::MakeMonitorInfo(displayDevice, &monitor));
 						}
 
 						ZeroMemory(&monitor, sizeof(monitor));
@@ -227,6 +238,19 @@ namespace s3d
 
 				ZeroMemory(&displayDevice, sizeof(displayDevice));
 				displayDevice.cb = sizeof(displayDevice);
+			}
+
+			// no monitor is found
+			if (monitors.empty())
+			{
+				for (int32 deviceIndex = 0; ::EnumDisplayDevicesW(0, deviceIndex, &displayDevice, 0); ++deviceIndex)
+				{
+					if (displayDevice.StateFlags & DISPLAY_DEVICE_ATTACHED_TO_DESKTOP)
+					{
+						monitors.push_back(detail::MakeMonitorInfo(displayDevice, nullptr));
+						break;
+					}
+				}
 			}
 
 			detail::GetFriendlyName(monitors);
